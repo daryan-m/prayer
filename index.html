@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>کاتەکانی بانگ - هەرێمی کوردستان</title>
+    <title>کاتەکانی بانگ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,57 +17,54 @@
             margin: 0;
         }
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 25px;
             width: 90%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 450px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
+        .clock-section { font-size: 3rem; font-weight: bold; margin-bottom: 5px; }
+        .next-prayer { background: #e67e22; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; display: inline-block; margin-bottom: 20px; }
+        .dates { font-size: 0.85rem; margin-bottom: 20px; opacity: 0.9; line-height: 1.6; }
         select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            margin-bottom: 20px;
-            outline: none;
+            width: 100%; padding: 10px; border-radius: 10px; border: none; margin-bottom: 20px; background: white; font-size: 1rem;
         }
         .time-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 18px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; background: rgba(255,255,255,0.05);
+            margin-bottom: 8px; border-radius: 12px; transition: 0.3s;
         }
-        .time-row:last-child { border-bottom: none; }
-        .time-row span:first-child { font-weight: bold; color: #34495e; }
-        .time-row span:last-child { color: #e67e22; font-family: monospace; font-size: 20px; }
+        .time-row:hover { background: rgba(255,255,255,0.15); }
+        .prayer-info { display: flex; align-items: center; gap: 10px; }
+        .mute-btn { cursor: pointer; color: #fff; opacity: 0.6; }
+        .mute-btn.active { color: #e67e22; opacity: 1; }
+        .time-val { font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>کاتەکانی بانگ</h2>
+    <div class="clock-section" id="liveClock">00:00:00</div>
+    <div class="next-prayer" id="countdown">چاوەڕێ بکە...</div>
     
+    <div class="dates" id="datesSection">
+        <div id="dateGregorian"></div>
+        <div id="dateHijri"></div>
+    </div>
+
     <select id="citySelect">
         <option value="Erbil">هەولێر</option>
         <option value="Sulaymaniyah">سلێمانی</option>
         <option value="Duhok">دهۆک</option>
         <option value="Halabja">هەڵەبجە</option>
         <option value="Kirkuk">کەرکوک</option>
-        <option value="Penjwin">پێنجوێن</option>
-        <option value="Ranya">ڕانیە</option>
-        <option value="Soran">سۆران</option>
-        <option value="Zakho">زاخۆ</option>
-        <option value="Akre">ئاکرێ</option>
+        <option value="Penjwin" selected>پێنجوێن</option>
     </select>
 
-    <div id="prayerTimes">
-        <p>خەریکە کاتەکان لادەبرێن...</p>
-    </div>
+    <div id="prayerTimes"></div>
 </div>
 
 <script src="script.js"></script>
