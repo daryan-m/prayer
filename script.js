@@ -1,7 +1,6 @@
 const citySelect = document.getElementById('citySelect');
 const prayerTimesDiv = document.getElementById('prayerTimes');
 
-// ناوی بانگەکان بە کوردی
 const prayerNamesKu = {
     "Fajr": "بەیانی",
     "Sunrise": "ڕۆژھەڵات",
@@ -12,40 +11,47 @@ const prayerNamesKu = {
 };
 
 async function getPrayerTimes(city) {
+    // نیشاندانی نامەی چاوەڕێ بکە تا کاتەکان دێن
+    prayerTimesDiv.innerHTML = "<p style='color: #2c3e50;'>خەریکە کاتەکان وەردەگیرێن...</p>";
+    
     const country = "Iraq";
+    // بەکارهێنانی https بۆ دڵنیایی لە کارکردن لەسەر گیتهەب
     const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=3`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
-        const timings = data.data.timings;
-
-        displayTimes(timings);
+        
+        if (data.code === 200) {
+            displayTimes(data.data.timings);
+        } else {
+            prayerTimesDiv.innerHTML = "<p>نەتوانرا زانیارییەکان وەرگیرێن</p>";
+        }
     } catch (error) {
-        prayerTimesDiv.innerHTML = "<p>هەڵەیەک ڕوویدا لە وەرگرتنی زانیارییەکان</p>";
+        console.error("Error:", error);
+        prayerTimesDiv.innerHTML = "<p>تکایە پەیوەندی ئینتەرنێتەکەت بپشکنە</p>";
     }
 }
 
 function displayTimes(timings) {
-    prayerTimesDiv.innerHTML = ""; // پاککردنەوەی ناوەڕۆکە کۆنەکە
+    prayerTimesDiv.innerHTML = ""; 
     
-    for (let [name, time] of Object.entries(timings)) {
-        if (prayerNamesKu[name]) {
-            const row = `
-                <div>
-                    <span class="prayer-name">${prayerNamesKu[name]}</span>
-                    <span class="prayer-time">${time}</span>
-                </div>
-            `;
-            prayerTimesDiv.innerHTML += row;
-        }
-    }
+    Object.keys(prayerNamesKu).forEach(key => {
+        const row = document.createElement('div');
+        row.innerHTML = `
+            <span class="prayer-name">${prayerNamesKu[key]}</span>
+            <span class="prayer-time">${timings[key]}</span>
+        `;
+        prayerTimesDiv.appendChild(row);
+    });
 }
 
-// کاتێک شارەکە دەگۆڕدرێت
+// گوێگرتن لە گۆڕانکاری شارەکان
 citySelect.addEventListener('change', (e) => {
     getPrayerTimes(e.target.value);
 });
 
-// بانگکردنی فەرمانی یەکەمجار بۆ هەولێر
-getPrayerTimes('Erbil');
+// بانگکردنی یەکەمجار بۆ هەولێر کاتێک سایتەکە دەکرێتەوە
+window.onload = () => {
+    getPrayerTimes('Erbil');
+};
