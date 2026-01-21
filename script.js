@@ -10,32 +10,45 @@ const prayerNamesKu = {
     "Isha": "خەوتنان"
 };
 
-async function getPrayerTimes(city) {
-    // نیشاندانی نامەی چاوەڕێ بکە تا کاتەکان دێن
-    prayerTimesDiv.innerHTML = "<p style='color: #2c3e50;'>خەریکە کاتەکان وەردەگیرێن...</p>";
+// فەرمان بۆ زیادکردنی خولەک بۆ کاتەکان
+function addMinutes(timeStr, minutesToAdd) {
+    if (!timeStr) return "";
+    let [hours, minutes] = timeStr.split(':').map(Number);
+    let date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes + minutesToAdd);
     
+    return date.getHours().toString().padStart(2, '0') + ":" + 
+           date.getMinutes().toString().padStart(2, '0');
+}
+
+async function getPrayerTimes(city) {
+    prayerTimesDiv.innerHTML = "<p>خەریکە کاتەکان وەردەگیرێن...</p>";
     const country = "Iraq";
-    // بەکارهێنانی https بۆ دڵنیایی لە کارکردن لەسەر گیتهەب
     const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=3`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
+        let timings = data.data.timings;
+
+        // --- جێبەجێکردنی گۆڕانکارییەکان بەپێی داواکارییەکەت ---
+        timings.Fajr = addMinutes(timings.Fajr, 6);      // بەیانی +٦
+        timings.Dhuhr = addMinutes(timings.Dhuhr, 6);    // نیوەڕۆ +٦
+        timings.Asr = addMinutes(timings.Asr, 2);        // عەسر +٢
+        timings.Maghrib = addMinutes(timings.Maghrib, 8); // ئێوارە +٨
+        timings.Isha = addMinutes(timings.Isha, 2);      // خەوتنان +٢
         
-        if (data.code === 200) {
-            displayTimes(data.data.timings);
-        } else {
-            prayerTimesDiv.innerHTML = "<p>نەتوانرا زانیارییەکان وەرگیرێن</p>";
-        }
+        // Sunrise (ڕۆژهەڵات) وەک خۆی دەمێنێتەوە و دەستکاری ناکرێت
+
+        displayTimes(timings);
     } catch (error) {
-        console.error("Error:", error);
-        prayerTimesDiv.innerHTML = "<p>تکایە پەیوەندی ئینتەرنێتەکەت بپشکنە</p>";
+        prayerTimesDiv.innerHTML = "<p>هەڵەیەک ڕوویدا لە وەرگرتنی زانیارییەکان</p>";
     }
 }
 
 function displayTimes(timings) {
     prayerTimesDiv.innerHTML = ""; 
-    
     Object.keys(prayerNamesKu).forEach(key => {
         const row = document.createElement('div');
         row.innerHTML = `
@@ -46,12 +59,11 @@ function displayTimes(timings) {
     });
 }
 
-// گوێگرتن لە گۆڕانکاری شارەکان
 citySelect.addEventListener('change', (e) => {
     getPrayerTimes(e.target.value);
 });
 
-// بانگکردنی یەکەمجار بۆ هەولێر کاتێک سایتەکە دەکرێتەوە
+// کاتی کردنەوەی سایتەکە
 window.onload = () => {
-    getPrayerTimes('Erbil');
+    getPrayerTimes(citySelect.value);
 };
