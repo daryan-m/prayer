@@ -1,15 +1,24 @@
+let prayerTimes = {};
 let isMuted = false;
-let prayerData = {};
 
-function updateClock() {
+// --- حیسابکردنی بەرواری کوردی (سادە کراوە) ---
+function getKurdiDate() {
     const now = new Date();
-    document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB');
+    const day = now.getDate();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear() - 621;
+    const months = ["خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز", "بەفرانبار", "ڕێبەندان", "ڕەشەمێ"];
+    // لێرەدا تەنها وەک نموونە دانراوە، بۆ وردی زیاتر پێویستی بە کتێبخانەی جیاوازە
+    return `${day}ی ${months[month-1]}ی ${year + 2700}ی کوردی`;
+}
+
+function updateUI() {
+    const now = new Date();
+    document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'});
+    document.getElementById('dateMiladi').innerText = "میلادی: " + now.toLocaleDateString('ku-IQ');
+    document.getElementById('dateKurdi').innerText = getKurdiDate();
     
-    // نوێکردنەوەی بەرواری میلادی
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('dateGregorian').innerText = "میلادی: " + now.toLocaleDateString('ku-IQ', options);
-    
-    setTimeout(updateClock, 1000);
+    findNextPrayer();
 }
 
 const fix = (time, min) => {
@@ -19,55 +28,46 @@ const fix = (time, min) => {
     return d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
 };
 
-async function getPrayerTimes(city) {
-    try {
-        const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`;
-        const response = await fetch(url);
-        const data = await response.json();
-        const t = data.data.timings;
-        
-        // حیساباتی خۆت
-        prayerData = {
-            "بەیانی": fix(t.Fajr, 6),
-            "ڕۆژھەڵات": t.Sunrise, // وەک خۆی
-            "نیوەڕۆ": fix(t.Dhuhr, 6),
-            "عەسر": fix(t.Asr, 2),
-            "ئێوارە": fix(t.Maghrib, 8),
-            "خەوتنان": fix(t.Isha, 2)
-        };
+async function getData(city) {
+    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
+    const data = await res.json();
+    const t = data.data.timings;
 
-        document.getElementById('dateHijri').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
-        displayTimes();
-    } catch (e) { console.log(e); }
+    prayerTimes = {
+        "بەیانی": fix(t.Fajr, 6),
+        "ڕۆژھەڵات": t.Sunrise,
+        "نیوەڕۆ": fix(t.Dhuhr, 6),
+        "عەسر": fix(t.Asr, 2),
+        "ئێوارە": fix(t.Maghrib, 8),
+        "خەوتنان": fix(t.Isha, 2)
+    };
+
+    document.getElementById('dateHijri').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
+    renderPrayers();
 }
 
-function displayTimes() {
-    const container = document.getElementById('prayerTimes');
-    container.innerHTML = "";
-    
-    Object.entries(prayerData).forEach(([name, time]) => {
-        const row = document.createElement('div');
-        row.className = 'time-row';
-        row.innerHTML = `
-            <div class="prayer-info">
-                <i class="fas fa-volume-up mute-btn ${isMuted ? '' : 'active'}" onclick="toggleMute(this)"></i>
-                <span>${name}</span>
+function renderPrayers() {
+    const list = document.getElementById('prayerList');
+    list.innerHTML = "";
+    Object.entries(prayerTimes).forEach(([name, time]) => {
+        const div = document.createElement('div');
+        div.className = 'prayer-row';
+        div.innerHTML = `
+            <div class="name">
+                <i class="fas fa-volume-up vol-icon ${isMuted ? '' : 'on'}" onclick="isMuted=!isMuted; renderPrayers()"></i>
+                ${name}
             </div>
-            <div class="time-val">${time}</div>
+            <div class="time">${time}</div>
         `;
-        container.appendChild(row);
+        list.appendChild(div);
     });
 }
 
-function toggleMute(el) {
-    isMuted = !isMuted;
-    displayTimes(); // ڕیفریشکردنی ئایکۆنەکان
+function findNextPrayer() {
+    // لێرەدا بەراوردی کات دەکەین بۆ کاونتداون (کورتکراوەتەوە)
+    document.getElementById('countdown').innerText = "کات ماوە بۆ بانگی داهاتوو";
 }
 
-// لێرەدا دەتوانیت فەرمانی لێدانی دەنگی بانگ زیاد بکەیت ئەگەر کاتەکە یەکسان بوو
-
-document.getElementById('citySelect').onchange = (e) => getPrayerTimes(e.target.value);
-window.onload = () => {
-    updateClock();
-    getPrayerTimes('Penjwin');
-};
+document.getElementById('citySelect').onchange = (e) => getData(e.target.value);
+setInterval(updateUI, 1000);
+window.onload = () => getData('Penjwin');
