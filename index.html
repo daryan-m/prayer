@@ -3,62 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پێنجوێن - کاتەکانی بانگ</title>
+    <title>کاتەکانی بانگ</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2830/2830239.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830239.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc; }
-        body {
-            background-color: var(--bg); color: var(--text);
-            font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0;
-            display: flex; justify-content: center; padding-top: 20px;
-        }
-        .app-card {
-            width: 90%; max-width: 400px; background: var(--card);
-            border-radius: 30px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        .main-clock { font-size: 3.5rem; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
-        .next-info { font-size: 1rem; background: #ea580c; padding: 5px 15px; border-radius: 50px; display: inline-block; margin-bottom: 20px; }
-        .date-box { font-size: 0.9rem; opacity: 0.8; margin-bottom: 25px; line-height: 1.8; }
-        .prayer-list { text-align: right; }
-        .row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; background: rgba(255,255,255,0.03);
-            margin-bottom: 10px; border-radius: 15px;
-        }
-        .active-row { border: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); }
-        .prayer-name { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
-        .time-val { font-size: 1.3rem; font-weight: bold; font-family: monospace; }
-        select {
-            width: 100%; background: #334155; color: white; border: none;
-            padding: 12px; border-radius: 12px; margin-bottom: 20px; outline: none;
-        }
+        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; }
+        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; }
+        .app-container { width: 95%; max-width: 420px; background: var(--card-bg); margin-top: 20px; border-radius: 30px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
+        .clock { font-size: 3.5rem; font-weight: bold; color: var(--accent); margin: 10px 0; }
+        .countdown { background: #f59e0b; color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: inline-block; margin-bottom: 15px; }
+        .dates { font-size: 0.85rem; opacity: 0.8; line-height: 1.7; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        select { width: 100%; padding: 12px; border-radius: 12px; border: none; background: #334155; color: white; margin-bottom: 20px; font-size: 1rem; }
+        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 15px; }
+        .prayer-row.active { border: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); }
+        .name { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
+        .time { font-family: monospace; font-size: 1.4rem; font-weight: bold; }
+        .vol-icon { cursor: pointer; opacity: 0.5; }
+        .vol-icon.on { opacity: 1; color: var(--accent); }
     </style>
 </head>
 <body>
 
-<div class="app-card">
-    <div class="main-clock" id="liveClock">00:00</div>
-    <div class="next-info" id="nextPrayerMsg">چاوەڕێ بکە...</div>
+<div class="app-container">
+    <div class="clock" id="liveClock">00:00</div>
+    <div class="countdown" id="countdown">چاوەڕێ بکە...</div>
     
-    <div class="date-box">
-        <div id="kurdiDate"></div>
-        <div id="hijriDate"></div>
-        <div id="miladiDate"></div>
+    <div class="dates">
+        <div id="dateKurdi"></div>
+        <div id="dateHijri"></div>
+        <div id="dateMiladi"></div>
     </div>
 
     <select id="citySelect">
-        <option value="Penjwin">پێنجوێن</option>
+        <option value="Penjwin" selected>پێنجوێن</option>
         <option value="Erbil">هەولێر</option>
         <option value="Sulaymaniyah">سلێمانی</option>
         <option value="Duhok">دهۆک</option>
-        <option value="Halabja">هەڵەبجە</option>
         <option value="Kirkuk">کەرکوک</option>
+        <option value="Halabja">هەڵەبجە</option>
     </select>
 
-    <div class="prayer-list" id="prayerList"></div>
+    <div id="prayerList"></div>
 </div>
 
 <script src="script.js"></script>
