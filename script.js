@@ -9,13 +9,21 @@ const fix = (time, min) => {
     return d.toTimeString().slice(0, 5);
 };
 
-function getKurdiDate() {
+// چارەسەری بەرواری کوردی و میلادی
+function updateDates(hijriData) {
     const now = new Date();
     const kurdishMonths = ["خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز", "بەفرانبار", "ڕێبەندان", "ڕەشەمێ"];
-    let kDay = now.getDate();
-    let kMonth = now.getMonth();
-    let kYear = 2725; // جێگیرکردنی ساڵ بەپێی ٢٠٢٦
-    return `${kDay}ی ${kurdishMonths[kMonth]}ی ${kYear}ی کوردی`;
+    
+    // ساڵی کوردی ڕێک ٢٧٢٥
+    const kurdiDateStr = `${now.getDate()}ی ${kurdishMonths[now.getMonth()]}ی ٢٧٢٥ی کوردی`;
+    document.getElementById('dateKurdi').innerText = kurdiDateStr;
+
+    // میلادی بە شێوازی ۲۰۲٦/۱/۲۲
+    const miladiStr = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+    document.getElementById('dateMiladi').innerText = miladiStr;
+
+    // کۆچی
+    document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
 }
 
 async function fetchPrayers(city) {
@@ -24,7 +32,7 @@ async function fetchPrayers(city) {
         const data = await res.json();
         const t = data.data.timings;
 
-        // کاتەکان بە وردی: عەسر +١، ئێوارە +٧، خەوتنان +١ (بەهۆی تێبینییەکەت یەک دەقەمان کەم کردەوە)
+        // چاککردنی کاتەکان (بەیانی+٦، نیوەڕۆ+٦، عەسر+١، ئێوارە+٧، خەوتنان+١)
         prayers = {
             "بەیانی": fix(t.Fajr, 6),
             "ڕۆژھەڵات": t.Sunrise,
@@ -34,12 +42,9 @@ async function fetchPrayers(city) {
             "خەوتنان": fix(t.Isha, 1)
         };
 
-        const now = new Date();
-        document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
-        document.getElementById('dateHijri').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
-        document.getElementById('dateKurdi').innerText = getKurdiDate();
+        updateDates(data.data.date.hijri);
         render();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("هەڵە لە وەرگرتنی زانیاری:", e); }
 }
 
 function render() {
@@ -65,12 +70,15 @@ function toggleMute(name) {
     render();
 }
 
+// چارەسەری کێشەی دەنگ
 function testAdhan() {
     const reciter = document.getElementById('reciterSelect').value;
     adhanPlayer.src = reciter;
+    adhanPlayer.load(); // بارکردنی فایلەکە بۆ دڵنیایی
+    
     if (adhanPlayer.paused) {
-        adhanPlayer.play();
-        document.querySelector('.test-btn').innerHTML = 'ڕاگرتنی تاقیکردنەوە <i class="fas fa-stop"></i>';
+        adhanPlayer.play().catch(err => alert("تکایە سەرەتا کلیک لە شوێنێکی لاپەڕەکە بکە تا دەنگەکە کار بکات"));
+        document.querySelector('.test-btn').innerHTML = 'ڕاگرتن <i class="fas fa-stop"></i>';
     } else {
         adhanPlayer.pause();
         adhanPlayer.currentTime = 0;
@@ -96,13 +104,14 @@ function updateClock() {
         if (diff > 0 && diff < minDiff) { minDiff = diff; nextName = name; }
     });
 
+    const timerEl = document.getElementById('timerDisplay');
     if (nextName) {
         const h = Math.floor(minDiff / 3600);
         const m = Math.floor((minDiff % 3600) / 60);
         const s = minDiff % 60;
-        document.getElementById('timerDisplay').innerText = `بۆ بانگی ${nextName}: ${h}:${m}:${s}`;
+        timerEl.innerText = `بۆ بانگی ${nextName}: ${h}:${m}:${s}`;
     } else {
-        document.getElementById('timerDisplay').innerText = "چاوەڕێی بانگی بەیانی...";
+        timerEl.innerText = "چاوەڕێی بانگی بەیانی...";
     }
 }
 
