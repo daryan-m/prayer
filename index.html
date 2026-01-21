@@ -4,78 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>کاتەکانی بانگ</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; }
         body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
-
-        /* لاپەڕەی یەکەم (داگرتنی ئەپ) */
         #install-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--main-bg); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
-        .app-logo { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--accent)); }
         .install-btn {
             background: var(--accent); color: #0f172a; border: none;
             padding: 15px 40px; border-radius: 50px; font-weight: bold;
-            font-size: 1.2rem; cursor: pointer; transition: 0.3s;
+            font-size: 1.2rem; cursor: pointer; margin-top: 20px;
         }
-        .skip-btn { margin-top: 20px; color: #64748b; background: none; border: none; text-decoration: underline; cursor: pointer; }
-
-        /* ناوەڕۆکی سایتەکە (سەرەتا شاراوەیە) */
         #main-content { display: none; padding: 20px; }
-        .app-container { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 30px; padding: 20px; margin: auto; }
-        .clock { font-size: 3.2rem; font-weight: bold; color: var(--accent); margin: 10px 0; font-family: monospace; text-align: center;}
-        .countdown { background: #ea580c; color: white; padding: 8px 20px; border-radius: 50px; font-weight: bold; display: block; margin: 0 auto 15px; width: fit-content; }
-        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 15px; }
-        .time { font-family: monospace; font-size: 1.4rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="install-overlay">
-    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" class="app-logo">
-    <h2>ئەپڵیکەیشنی کاتەکانی بانگ</h2>
-    <p id="instruction-text">بۆ بینینی کاتەکان، تکایە ئەپەکە جێگیر بکە</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" width="100">
+    <h2>بەخێربێیت بۆ ئەپی کاتەکانی بانگ</h2>
+    <p id="instruction-text">تکایە سەرەتا ئەپەکە جێگیر بکە</p>
     <button class="install-btn" id="btnInstall">داگرتنی ئەپ <i class="fas fa-download"></i></button>
-    <button class="skip-btn" onclick="showContent()">دواتر جێگیری دەکەم</button>
+    <button onclick="showContent()" style="background:none; border:none; color:#64748b; margin-top:20px; text-decoration:underline;">دواتر جێگیری دەکەم</button>
 </div>
 
 <div id="main-content">
-    <div class="app-container">
-        <div class="clock" id="liveClock">00:00:00</div>
-        <div id="timerDisplay" class="countdown">--:--:--</div>
-        <div style="text-align:center; opacity:0.8; margin-bottom:15px;" id="dateKurdi"></div>
-        <div id="prayerList"></div>
-        <button onclick="location.reload()" style="width:100%; background:none; border:1px solid #334155; color:white; padding:10px; border-radius:10px; margin-top:10px;">نوێکردنەوە</button>
-    </div>
+    <h1>کاتەکانی بانگ</h1>
 </div>
 
-<audio id="adhanPlayer"></audio>
-
 <script>
-    let deferredPrompt;
-    const overlay = document.getElementById('install-overlay');
-    const content = document.getElementById('main-content');
-    const btnInstall = document.getElementById('btnInstall');
-    const instructionText = document.getElementById('instruction-text');
-
-    // ئەگەر پێشتر وەک ئەپ کرابێتەوە، یەکسەر ناوەڕۆک نیشان بدە
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-        showContent();
+    // چالاککردنی Service Worker (پێویستە بۆ داگرتن)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
     }
+
+    let deferredPrompt;
+    const btnInstall = document.getElementById('btnInstall');
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        // بۆ ئەندرۆید: دوگمەکە چالاک دەکەین
         btnInstall.onclick = () => {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choice) => {
@@ -84,25 +61,11 @@
         };
     });
 
-    // بۆ ئایفۆن: چونکە دوگمەی داگرتن کار ناکات، ڕێنمایی دەگۆڕین
-    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIos) {
-        btnInstall.style.display = 'none';
-        instructionText.innerHTML = "بۆ داگرتن لە ئایفۆن: <br> کلیک لە <b>Share</b> بکە و پاشان <b>Add to Home Screen</b>";
-    }
-
     function showContent() {
-        overlay.style.display = 'none';
-        content.style.display = 'block';
+        document.getElementById('install-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
         document.body.style.overflow = 'auto';
     }
 </script>
-<script src="script.js"></script>
-    <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
-
 </body>
 </html>
