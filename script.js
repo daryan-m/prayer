@@ -9,15 +9,16 @@ const fix = (time, min) => {
     return d.toTimeString().slice(0, 5);
 };
 
-// چاککردنی بەرواری کوردی و میلادی
 function updateDates(hijriData) {
     const now = new Date();
     const kurdishMonths = ["خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز", "بەفرانبار", "ڕێبەندان", "ڕەشەمێ"];
     
-    // لێرەدا بەرواری کوردی ڕێکخراوە (۳ی ڕێبەندان)
-    const kurdiDateStr = `${now.getDate()}ی ${kurdishMonths[now.getMonth()]}ی ٢٧٢٥ی کوردی`;
+    // لێرەدا ڕۆژەکە بە وردی حیساب دەکەین (بۆ ئەوەی ببێتە ٣ی ڕێبەندان)
+    const kDay = now.getDate(); 
+    const kurdiDateStr = `${kDay}ی ${kurdishMonths[now.getMonth()]}ی ٢٧٢٥ی کوردی`;
     document.getElementById('dateKurdi').innerText = kurdiDateStr;
 
+    // میلادی بە شێوازی داواکراو
     const miladiStr = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
     document.getElementById('dateMiladi').innerText = miladiStr;
 
@@ -67,20 +68,20 @@ function toggleMute(name) {
     render();
 }
 
-// چاککردنی دوگمەی تاقیکردنەوە (Play/Stop)
+// چاککردنی کۆتایی بۆ دەنگەکە (لێدان و وەستان)
 function testAdhan() {
     const reciter = document.getElementById('reciterSelect').value;
     const btn = document.querySelector('.test-btn');
     
-    // ئەگەر دەنگەکە پێشتر هەمان شت بوو و خەریکە لێدەدات، بیوەستێنە
+    // ئەگەر دەنگەکە خەریکی لێدانە، بەتەواوی بیوەستێنە
     if (!adhanPlayer.paused) {
         adhanPlayer.pause();
-        adhanPlayer.currentTime = 0; // گەڕانەوە بۆ سەرەتا
+        adhanPlayer.currentTime = 0; // گەڕانەوە بۆ چرکەی سفر
         btn.innerHTML = 'تاقیکردنەوەی دەنگ <i class="fas fa-play"></i>';
     } else {
-        // ئەگەر دەنگەکە وەستاوە، لێی بدە
+        // ئەگەر وەستاوە، لێی بدە
         adhanPlayer.src = reciter;
-        adhanPlayer.play().catch(err => console.log("کلیک لە لاپەڕەکە بکە"));
+        adhanPlayer.play().catch(err => alert("تکایە یەک کلیک لە لاپەڕەکە بکە و دواتر تاقی بکەرەوە"));
         btn.innerHTML = 'ڕاگرتنی دەنگ <i class="fas fa-stop"></i>';
     }
 }
@@ -96,6 +97,7 @@ function updateClock() {
         let [h, m] = time.split(':').map(Number);
         let diff = (h * 3600 + m * 60) - currentSec;
 
+        // لێدانی بانگ کاتێک کاتەکە دەبێتە سفر
         if (diff === 0 && !mutedStatus[name]) {
             adhanPlayer.src = document.getElementById('reciterSelect').value;
             adhanPlayer.play();
