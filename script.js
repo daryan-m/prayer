@@ -9,20 +9,18 @@ const fix = (time, min) => {
     return d.toTimeString().slice(0, 5);
 };
 
-// چارەسەری بەرواری کوردی و میلادی
+// چاککردنی بەرواری کوردی و میلادی
 function updateDates(hijriData) {
     const now = new Date();
     const kurdishMonths = ["خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز", "بەفرانبار", "ڕێبەندان", "ڕەشەمێ"];
     
-    // ساڵی کوردی ڕێک ٢٧٢٥
+    // لێرەدا بەرواری کوردی ڕێکخراوە (۳ی ڕێبەندان)
     const kurdiDateStr = `${now.getDate()}ی ${kurdishMonths[now.getMonth()]}ی ٢٧٢٥ی کوردی`;
     document.getElementById('dateKurdi').innerText = kurdiDateStr;
 
-    // میلادی بە شێوازی ۲۰۲٦/۱/۲۲
     const miladiStr = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
     document.getElementById('dateMiladi').innerText = miladiStr;
 
-    // کۆچی
     document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
 }
 
@@ -32,7 +30,6 @@ async function fetchPrayers(city) {
         const data = await res.json();
         const t = data.data.timings;
 
-        // چاککردنی کاتەکان (بەیانی+٦، نیوەڕۆ+٦، عەسر+١، ئێوارە+٧، خەوتنان+١)
         prayers = {
             "بەیانی": fix(t.Fajr, 6),
             "ڕۆژھەڵات": t.Sunrise,
@@ -44,7 +41,7 @@ async function fetchPrayers(city) {
 
         updateDates(data.data.date.hijri);
         render();
-    } catch (e) { console.error("هەڵە لە وەرگرتنی زانیاری:", e); }
+    } catch (e) { console.error(e); }
 }
 
 function render() {
@@ -70,19 +67,21 @@ function toggleMute(name) {
     render();
 }
 
-// چارەسەری کێشەی دەنگ
+// چاککردنی دوگمەی تاقیکردنەوە (Play/Stop)
 function testAdhan() {
     const reciter = document.getElementById('reciterSelect').value;
-    adhanPlayer.src = reciter;
-    adhanPlayer.load(); // بارکردنی فایلەکە بۆ دڵنیایی
+    const btn = document.querySelector('.test-btn');
     
-    if (adhanPlayer.paused) {
-        adhanPlayer.play().catch(err => alert("تکایە سەرەتا کلیک لە شوێنێکی لاپەڕەکە بکە تا دەنگەکە کار بکات"));
-        document.querySelector('.test-btn').innerHTML = 'ڕاگرتن <i class="fas fa-stop"></i>';
-    } else {
+    // ئەگەر دەنگەکە پێشتر هەمان شت بوو و خەریکە لێدەدات، بیوەستێنە
+    if (!adhanPlayer.paused) {
         adhanPlayer.pause();
-        adhanPlayer.currentTime = 0;
-        document.querySelector('.test-btn').innerHTML = 'تاقیکردنەوەی دەنگ <i class="fas fa-play"></i>';
+        adhanPlayer.currentTime = 0; // گەڕانەوە بۆ سەرەتا
+        btn.innerHTML = 'تاقیکردنەوەی دەنگ <i class="fas fa-play"></i>';
+    } else {
+        // ئەگەر دەنگەکە وەستاوە، لێی بدە
+        adhanPlayer.src = reciter;
+        adhanPlayer.play().catch(err => console.log("کلیک لە لاپەڕەکە بکە"));
+        btn.innerHTML = 'ڕاگرتنی دەنگ <i class="fas fa-stop"></i>';
     }
 }
 
