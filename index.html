@@ -3,36 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>کاتەکانی بانگ - کوردستان</title>
-    <link rel="stylesheet" href="style.css">
+    <title>کاتەکانی بانگ - هەرێمی کوردستان</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .time-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+        .time-row:last-child { border-bottom: none; }
+        .time-row span:first-child { font-weight: bold; color: #34495e; }
+        .time-row span:last-child { color: #e67e22; font-family: monospace; font-size: 20px; }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>کاتەکانی بانگ لە هەرێمی کوردستان</h2>
-        
-        <div class="selection">
-            <label for="citySelect">شارەکە هەڵبژێرە:</label>
-            <select id="citySelect">
-    <option value="Erbil">هەولێر</option>
-    <option value="Sulaymaniyah">سلێمانی</option>
-    <option value="Duhok">دهۆک</option>
-    <option value="Halabja">هەڵەبجە</option>
-    <option value="Kirkuk">کەرکوک</option>
-    <option value="Penjwin">پێنجوێن</option>
-    <option value="Ranya">ڕانیە</option>
-    <option value="Soran">سۆران</option>
-    <option value="Zakho">زاخۆ</option>
-    <option value="Akre">ئاکرێ</option>
-</select>
+<div class="container">
+    <h2>کاتەکانی بانگ</h2>
+    
+    <select id="citySelect">
+        <option value="Erbil">هەولێر</option>
+        <option value="Sulaymaniyah">سلێمانی</option>
+        <option value="Duhok">دهۆک</option>
+        <option value="Halabja">هەڵەبجە</option>
+        <option value="Kirkuk">کەرکوک</option>
+        <option value="Penjwin">پێنجوێن</option>
+        <option value="Ranya">ڕانیە</option>
+        <option value="Soran">سۆران</option>
+        <option value="Zakho">زاخۆ</option>
+        <option value="Akre">ئاکرێ</option>
+    </select>
 
-        </div>
-
-        <div class="prayer-cards" id="prayerTimes">
-            <p>چاوەڕێ بکە...</p>
-        </div>
+    <div id="prayerTimes">
+        <p>خەریکە کاتەکان لادەبرێن...</p>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
