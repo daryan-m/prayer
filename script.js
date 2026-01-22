@@ -1,5 +1,9 @@
 let prayers = {};
-let mutedStatus = { "بەیانی": true, "نیوەڕۆ": true, "عەسر": true, "ئێوارە": true, "خەوتنان": true };
+// بارکردنی دۆخی دەنگ لە بیرگەی مۆبایلەکە
+let mutedStatus = JSON.parse(localStorage.getItem('mutedStatus')) || { 
+    "بەیانی": true, "نیوەڕۆ": true, "عەسر": true, "ئێوارە": true, "خەوتنان": true 
+};
+
 const adhanPlayer = document.getElementById('adhanPlayer');
 
 const fix = (time, min) => {
@@ -9,17 +13,10 @@ const fix = (time, min) => {
     return d.toTimeString().slice(0, 5);
 };
 
-// --- ئەمە ئەو بەشەیە کە بەروارە کوردییەکەی تێدا چاک کراوە ---
 function updateDates(hijriData) {
     const now = new Date();
-    const kurdishMonths = ["خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز", "بەفرانبار", "ڕێبەندان", "ڕەشەمێ"];
-    
-    // لێرەدا بەروارەکەمان ڕێکخست بۆ ۳ی ڕێبەندان
-    let kDay = 3; 
-    let kMonthName = "ڕێبەندان";
-    let kYear = 2725;
-
-    document.getElementById('dateKurdi').innerText = `${kDay}ی ${kMonthName}ی ${kYear}ی کوردی`;
+    // جێگیرکردنی ۲ی ڕێبەندان بەپێی داواکاری تۆ
+    document.getElementById('dateKurdi').innerText = `۲ی ڕێبەندانی ۲۷۲٥ی کوردی`;
     document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
     document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
 }
@@ -30,13 +27,14 @@ async function fetchPrayers(city) {
         const data = await res.json();
         const t = data.data.timings;
 
+        // +1 دەقە بۆ عەسر، ئێوارە، و خەوتنان
         prayers = {
             "بەیانی": fix(t.Fajr, 6),
             "ڕۆژھەڵات": t.Sunrise,
             "نیوەڕۆ": fix(t.Dhuhr, 6),
-            "عەسر": fix(t.Asr, 1), 
-            "ئێوارە": fix(t.Maghrib, 7),
-            "خەوتنان": fix(t.Isha, 1)
+            "عەسر": fix(t.Asr, 2), 
+            "ئێوارە": fix(t.Maghrib, 8),
+            "خەوتنان": fix(t.Isha, 2)
         };
 
         updateDates(data.data.date.hijri);
@@ -64,22 +62,8 @@ function render() {
 
 function toggleMute(name) {
     mutedStatus[name] = !mutedStatus[name];
+    localStorage.setItem('mutedStatus', JSON.stringify(mutedStatus)); // سەیڤکردنی دۆخی دەنگ
     render();
-}
-
-function testAdhan() {
-    const reciter = document.getElementById('reciterSelect').value;
-    const btn = document.querySelector('.test-btn');
-    
-    if (!adhanPlayer.paused) {
-        adhanPlayer.pause();
-        adhanPlayer.currentTime = 0;
-        btn.innerHTML = 'تاقیکردنەوەی دەنگ <i class="fas fa-play"></i>';
-    } else {
-        adhanPlayer.src = reciter;
-        adhanPlayer.play().catch(err => console.log("Error playing audio"));
-        btn.innerHTML = 'ڕاگرتنی دەنگ <i class="fas fa-stop"></i>';
-    }
 }
 
 function updateClock() {
@@ -94,12 +78,13 @@ function updateClock() {
         let diff = (h * 3600 + m * 60) - currentSec;
 
         if (diff === 0 && !mutedStatus[name]) {
-            adhanPlayer.src = document.getElementById('reciterSelect').value;
+            adhanPlayer.src = document.getElementById('selectedReciter').value;
             adhanPlayer.play();
         }
         if (diff > 0 && diff < minDiff) { minDiff = diff; nextName = name; }
     });
 
+    // کاتی ماوە بۆ بانگی داهاتوو
     const timerEl = document.getElementById('timerDisplay');
     if (nextName) {
         const h = Math.floor(minDiff / 3600);
