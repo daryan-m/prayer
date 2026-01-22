@@ -1,8 +1,13 @@
 let prayers = {};
-// لێرەدا هەموویان فۆڵسن (واتە بێدەنگ)
-let mutedStatus = JSON.parse(localStorage.getItem('p_mutedStatus')) || { 
-    "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false 
-};
+
+// ١. زۆرکردن لە ئەپەکە بۆ ئەوەی لە یەکەم جاردا بێدەنگ بێت
+if (!localStorage.getItem('force_mute_init_v4')) {
+    const defaultMuted = { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
+    localStorage.setItem('p_mutedStatus', JSON.stringify(defaultMuted));
+    localStorage.setItem('force_mute_init_v4', 'true');
+}
+
+let mutedStatus = JSON.parse(localStorage.getItem('p_mutedStatus'));
 
 const fix = (time, min) => {
     let [h, m] = time.split(':').map(Number);
@@ -13,9 +18,11 @@ const fix = (time, min) => {
 
 function updateDates(hijriData) {
     const now = new Date();
+    // چاککردنی بەرواری کوردی بۆ ۳ی ڕێبەندان
     const kurdiDay = 3; 
     const kurdiMonth = "ڕێبەندان";
     const kurdiYear = 2725;
+
     document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
     document.getElementById('dateKurdi').innerText = `کوردی: ${kurdiDay}ی ${kurdiMonth}ی ${kurdiYear}`;
     document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
@@ -40,9 +47,6 @@ function render() {
     list.innerHTML = "";
     Object.entries(prayers).forEach(([name, time]) => {
         const canMute = name !== "ڕۆژھەڵات";
-        // لێرەدا مەرجەکە گۆڕدرا: ئەگەر فۆڵس بوو (بێدەنگ) ڕەنگی خۆڵەمێشی بێت
-        const isCurrentMuted = !mutedStatus[name]; 
-        
         const div = document.createElement('div');
         div.className = 'prayer-row';
         div.innerHTML = `
@@ -81,7 +85,7 @@ function updateClock() {
         let pSec = ph * 3600 + pm * 60;
         let diff = pSec - currentSec;
         if (diff > 0 && diff < minDiff) { minDiff = diff; nextName = name; }
-        // تەنها ئەگەر موکەبەرەکە شین بوو (true) بانگ بدات
+        
         if (diff === 0 && mutedStatus[name]) {
             const p = document.getElementById('adhanPlayer');
             p.src = localStorage.getItem('selectedReciterUrl') || 'https://www.islamcan.com/audio/adhan/azan1.mp3';
