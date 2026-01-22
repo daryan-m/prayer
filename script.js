@@ -1,5 +1,5 @@
 let prayers = {};
-let let mutedStatus = JSON.parse(localStorage.getItem('mutedStatus')) || { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
+let mutedStatus = JSON.parse(localStorage.getItem('mutedStatus')) || { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
 
 
 const fix = (time, min) => {
