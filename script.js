@@ -1,5 +1,6 @@
 let prayers = {};
-let mutedStatus = JSON.parse(localStorage.getItem('mutedStatus')) || { "بەیانی": true, "نیوەڕۆ": true, "عەسر": true, "ئێوارە": true, "خەوتنان": true };
+let let mutedStatus = JSON.parse(localStorage.getItem('mutedStatus')) || { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
+
 
 const fix = (time, min) => {
     let [h, m] = time.split(':').map(Number);
