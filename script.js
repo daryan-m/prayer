@@ -10,8 +10,8 @@ const fix = (time, min) => {
 
 function updateDates(hijriData) {
     const now = new Date();
-    // لێرەدا بەروارەکەمان ڕاست کردەوە بۆ ۳ی ڕێبەندان
-    const kurdiDay = 3; 
+    // چاککردنی بەرواری کوردی بۆ ٢٣ی ڕێبەندان
+    const kurdiDay = 23; 
     const kurdiMonth = "ڕێبەندان";
     const kurdiYear = 2725;
 
@@ -38,7 +38,7 @@ function render() {
         const canMute = name !== "ڕۆژھەڵات";
         const div = document.createElement('div');
         div.className = 'prayer-row';
-        div.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">${canMute ? `<i class="fas ${mutedStatus[name]?'fa-volume-up':'fa-volume-mute'}" style="color:${mutedStatus[name]?'#38bdf8':'#64748b'}" onclick="toggleMute('${name}')"></i>` : '<i class="fas fa-sun" style="color:#eab308"></i>'}<span>${name}</span></div><div class="time">${time}</div>`;
+        div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><i class="fas ${canMute ? (mutedStatus[name]?'fa-volume-up':'fa-volume-mute') : 'fa-sun'}" style="color:${canMute ? (mutedStatus[name]?'#38bdf8':'#64748b') : '#eab308'}" ${canMute ? `onclick="toggleMute('${name}')"` : ''}></i><span style="font-size:1.1rem">${name}</span></div><div class="time">${time}</div>`;
         list.appendChild(div);
     });
 }
@@ -72,9 +72,9 @@ function updateClock() {
 
     const timerEl = document.getElementById('timerDisplay');
     if (nextName) {
-        const hoursLeft = Math.floor(minDiff / 3600);
-        const minsLeft = Math.floor((minDiff % 3600) / 60);
-        timerEl.innerText = `بۆ بانگی ${nextName} ${hoursLeft > 0 ? hoursLeft + ':' : ''}${minsLeft} خولەکی ماوە`;
+        const hL = Math.floor(minDiff / 3600);
+        const mL = Math.floor((minDiff % 3600) / 60);
+        timerEl.innerText = `بۆ بانگی ${nextName} ${hL > 0 ? hL + ':' : ''}${mL} خولەکی ماوە`;
     }
 }
 
