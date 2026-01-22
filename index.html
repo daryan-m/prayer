@@ -8,52 +8,107 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; }
-        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+
+        /* لاپەڕەی داگرتنی ئەپ */
         #install-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--main-bg); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
+        .app-logo { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--accent)); }
         .install-btn {
             background: var(--accent); color: #0f172a; border: none;
             padding: 15px 40px; border-radius: 50px; font-weight: bold;
-            font-size: 1.2rem; cursor: pointer; margin-top: 20px;
+            font-size: 1.2rem; cursor: pointer; transition: 0.3s;
         }
-        #main-content { display: none; padding: 20px; }
+
+        /* ناوەڕۆکی سەرەکی */
+        #main-content { display: none; }
+        .app-container { width: 95%; max-width: 420px; background: var(--card-bg); margin: 20px auto; border-radius: 30px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
+        .clock { font-size: 3.2rem; font-weight: bold; color: var(--accent); margin: 10px 0; font-family: monospace; }
+        .countdown { background: #ea580c; color: white; padding: 8px 20px; border-radius: 50px; font-weight: bold; font-size: 1rem; display: inline-block; margin-bottom: 15px; }
+        .dates { font-size: 0.9rem; opacity: 0.9; line-height: 1.8; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        select { width: 100%; padding: 12px; border-radius: 12px; border: none; background: #334155; color: white; margin-bottom: 10px; font-size: 1rem; cursor: pointer; }
+        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 15px; }
+        .vol-icon { cursor: pointer; color: #64748b; font-size: 1.3rem; }
+        .vol-icon.on { color: var(--accent); }
+        .time { font-family: monospace; font-size: 1.4rem; font-weight: bold; }
+        .test-btn { background: var(--accent); color: #0f172a; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="install-overlay">
-    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" width="100">
-    <h2>بەخێربێیت بۆ ئەپی کاتەکانی بانگ</h2>
-    <p id="instruction-text">تکایە سەرەتا ئەپەکە جێگیر بکە</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" class="app-logo">
+    <h2>ئەپی کاتەکانی بانگ</h2>
+    <p id="instruction-text">بۆ بینینی کاتەکان بە شێوەی ئەپ، تکایە جێگیری بکە</p>
     <button class="install-btn" id="btnInstall">داگرتنی ئەپ <i class="fas fa-download"></i></button>
     <button onclick="showContent()" style="background:none; border:none; color:#64748b; margin-top:20px; text-decoration:underline;">دواتر جێگیری دەکەم</button>
 </div>
 
 <div id="main-content">
-    <h1>کاتەکانی بانگ</h1>
+    <div class="app-container">
+        <div class="clock" id="liveClock">00:00:00</div>
+        <div class="countdown" id="timerDisplay">بارکردنی کاتەکان...</div>
+        
+        <div class="dates">
+            <div id="dateKurdi"></div>
+            <div id="dateHijri"></div>
+            <div id="dateMiladi"></div>
+        </div>
+
+        <select id="citySelect">
+            <option value="Penjwin" selected>پێنجوێن</option>
+            <option value="Sulaymaniyah">سلێمانی</option>
+            <option value="Erbil">هەولێر</option>
+            <option value="Duhok">دهۆک</option>
+            <option value="Kirkuk">کەرکوک</option>
+        </select>
+
+        <div id="prayerList"></div>
+
+        <div style="margin-top:20px; text-align:right; border-top:1px solid #334155; padding-top:15px;">
+            <label style="font-size: 0.85rem; color: var(--accent);">هەڵبژاردنی بانگبێژ:</label>
+            <select id="reciterSelect">
+                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مەککە (شێخ عەلی مەلا)</option>
+                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">مەدینە (شێخ عەبدولمەجید)</option>
+                <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">میسر (شێخ عەبدولباست)</option>
+            </select>
+            <button class="test-btn" onclick="testAdhan()">تاقیکردنەوەی دەنگ <i class="fas fa-play"></i></button>
+        </div>
+    </div>
 </div>
 
+<audio id="adhanPlayer"></audio>
+
 <script>
-    // چالاککردنی Service Worker (پێویستە بۆ داگرتن)
+    // چالاککردنی Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js');
     }
 
-    let deferredPrompt;
-    const btnInstall = document.getElementById('btnInstall');
+    const overlay = document.getElementById('install-overlay');
+    const content = document.getElementById('main-content');
 
+    // ئەم بەشە پشکنین دەکات: ئایا ئێستا لە ناو ئەپەکەدایە؟
+    const isApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    if (isApp) {
+        showContent(); // ئەگەر لە ناو ئەپ بوو، یەکسەر کاتەکان نیشان بدە
+    }
+
+    let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        btnInstall.onclick = () => {
+        document.getElementById('btnInstall').onclick = () => {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choice) => {
                 if (choice.outcome === 'accepted') showContent();
@@ -62,10 +117,11 @@
     });
 
     function showContent() {
-        document.getElementById('install-overlay').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        overlay.style.display = 'none';
+        content.style.display = 'block';
         document.body.style.overflow = 'auto';
     }
 </script>
+<script src="script.js"></script>
 </body>
 </html>
