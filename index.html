@@ -6,113 +6,160 @@
     <title>کاتەکانی بانگ</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; }
-        body { 
-            background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; 
-            margin: 0; padding: 0; overflow-x: hidden; width: 100vw;
-        }
-        #install-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--main-bg); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px; box-sizing: border-box;
-        }
-        #main-content { display: none; width: 100%; max-width: 450px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
-        .app-container { background: var(--card-bg); border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .clock { font-size: 3rem; font-weight: bold; color: var(--accent); margin: 5px 0; font-family: monospace; text-align: center; }
-        .countdown { background: #ea580c; color: white; padding: 6px 15px; border-radius: 50px; font-weight: bold; display: block; margin: 0 auto 15px; width: fit-content; font-size: 0.9rem; }
-        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 12px; }
-        .time { font-family: monospace; font-size: 1.3rem; font-weight: bold; }
-        .reciter-item { display: flex; justify-content: space-between; align-items: center; background: #334155; padding: 10px; margin-top: 5px; border-radius: 8px; font-size: 0.9rem; }
-        .play-btn { color: var(--accent); cursor: pointer; font-size: 1.2rem; }
-        .vol-icon { cursor: pointer; font-size: 1.2rem; color: #64748b; }
-        .vol-icon.on { color: var(--accent); }
+        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --sidebar-bg: #111827; }
+        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
+        .menu-btn { font-size: 1.5rem; cursor: pointer; color: var(--accent); }
+        
+        /* Sidebar Menu */
+        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s; padding: 20px; box-sizing: border-box; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+        .sidebar.active { right: 0; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
+        .sidebar-item { padding: 15px 0; border-bottom: 1px solid #1f2937; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #cbd5e1; }
+        
+        /* Content Area */
+        .main-container { padding: 15px; max-width: 450px; margin: 0 auto; }
+        .date-section { text-align: center; margin-bottom: 20px; }
+        .hijri-main { font-size: 1.8rem; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
+        .other-dates { font-size: 0.9rem; opacity: 0.7; }
+        
+        .clock { font-size: 3.5rem; font-weight: bold; text-align: center; margin: 10px 0; font-family: monospace; color: white; }
+        .countdown { background: #ea580c; color: white; padding: 8px 20px; border-radius: 50px; font-weight: bold; text-align: center; margin: 0 auto 20px; width: fit-content; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card-bg); margin-bottom: 10px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); }
+        .time { font-family: monospace; font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+        
+        /* Reciter Selection Styles */
+        .reciter-option { display: flex; align-items: center; justify-content: space-between; background: #1e293b; padding: 10px; border-radius: 10px; margin-bottom: 8px; }
+        .reciter-info { display: flex; align-items: center; gap: 10px; }
+        .radio-custom { width: 18px; height: 18px; cursor: pointer; }
+        
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
+        .overlay.active { display: block; }
     </style>
 </head>
 <body>
 
-<div id="install-overlay">
-    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" width="100">
-    <h2>ئەپی کاتەکانی بانگ</h2>
-    <p id="instruction-text">تکایە بۆ بینینی کاتەکان، ئەپەکە جێگیر بکە</p>
-    <button class="install-btn" id="btnInstall" style="background:var(--accent); border:none; padding:12px 30px; border-radius:25px; font-weight:bold;">داگرتنی ئەپ</button>
-    <button onclick="showContent()" style="background:none; border:none; color:#64748b; margin-top:15px; text-decoration:underline;">دواتر</button>
-</div>
+    <div class="navbar">
+        <div style="font-weight: bold;">کاتەکانی بانگ</div>
+        <i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i>
+    </div>
 
-<div id="main-content">
-    <div class="app-container">
-        <div class="clock" id="liveClock">00:00:00</div>
-        <div id="timerDisplay" class="countdown">--:--:--</div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>ڕێکخستنەکان</h3>
+            <i class="fas fa-times" onclick="toggleMenu()" style="cursor:pointer;"></i>
+        </div>
         
-        <div style="text-align:center; margin-bottom:15px;">
-            <div id="dateKurdi" style="font-weight:bold; color:var(--accent);"></div>
-            <div id="dateHijri" style="font-size:0.8rem; opacity:0.7;"></div>
-            <div id="dateMiladi" style="font-size:0.8rem; opacity:0.7;"></div>
+        <div class="sidebar-item" onclick="showSubMenu('reciter-menu')">
+            <i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ
+        </div>
+        
+        <div id="reciter-menu" style="display:none; padding-top:10px;">
+            <div class="reciter-option">
+                <div class="reciter-info">
+                    <input type="radio" name="reciter" class="radio-custom" value="azan1.mp3" onchange="setReciter(this)" checked>
+                    <span>شێخ عەلی مەلا</span>
+                </div>
+                <i class="fas fa-play" onclick="testVoice('https://www.islamcan.com/audio/adhan/azan1.mp3', this)"></i>
+            </div>
+            <div class="reciter-option">
+                <div class="reciter-info">
+                    <input type="radio" name="reciter" class="radio-custom" value="azan2.mp3" onchange="setReciter(this)">
+                    <span>شێخ عەبدولمەجید</span>
+                </div>
+                <i class="fas fa-play" onclick="testVoice('https://www.islamcan.com/audio/adhan/azan2.mp3', this)"></i>
+            </div>
+            <div class="reciter-option">
+                <div class="reciter-info">
+                    <input type="radio" name="reciter" class="radio-custom" value="azan3.mp3" onchange="setReciter(this)">
+                    <span>شێخ عەبدولباست</span>
+                </div>
+                <i class="fas fa-play" onclick="testVoice('https://www.islamcan.com/audio/adhan/azan3.mp3', this)"></i>
+            </div>
         </div>
 
-        <select id="citySelect" style="width:100%; padding:10px; border-radius:10px; background:#1e293b; color:white; border:1px solid #334155; margin-bottom:10px;">
-            <option value="Penjwin">پێنجوێن</option>
+        <div class="sidebar-item">
+            <a href="https://youtube.com/@YOUR_CHANNEL" style="color:inherit; text-decoration:none;">
+                <i class="fab fa-youtube"></i> یوتیوب
+            </a>
+        </div>
+        
+        <div class="sidebar-item" onclick="alert('ئەم ئەپە کاتەکانی بانگی تێدایە بۆ شاری پێنجوێن و دەوروبەری.')">
+            <i class="fas fa-info-circle"></i> دەربارە
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="date-section">
+            <div id="dateHijri" class="hijri-main">کۆچی: --:--</div>
+            <div class="other-dates">
+                <span id="dateKurdi"></span> | <span id="dateMiladi"></span>
+            </div>
+        </div>
+
+        <div class="clock" id="liveClock">00:00:00</div>
+        <div id="timerDisplay" class="countdown">بۆ بانگی داهاتوو: --:--:--</div>
+
+        <select id="citySelect" style="width:100%; padding:12px; border-radius:12px; background:#1e293b; color:white; border:1px solid #334155; margin-bottom:20px;">
+            <option value="Penjwin" selected>پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
-            <option value="Duhok">دهۆک</option>
-            <option value="Kirkuk">کەرکوک</option>
         </select>
 
         <div id="prayerList"></div>
-
-        <div style="margin-top:20px;">
-            <p style="font-size:0.85rem; color:var(--accent); margin-bottom:5px;">هەڵبژاردنی بانگبێژ و تاقیکردنەوە:</p>
-            <div id="reciterList">
-                <div class="reciter-item">
-                    <span>مەککە (شێخ عەلی مەلا)</span>
-                    <i class="fas fa-play play-btn" onclick="testReciter(this, 'https://www.islamcan.com/audio/adhan/azan1.mp3')"></i>
-                </div>
-                <div class="reciter-item">
-                    <span>مەدینە (شێخ عەبدولمەجید)</span>
-                    <i class="fas fa-play play-btn" onclick="testReciter(this, 'https://www.islamcan.com/audio/adhan/azan2.mp3')"></i>
-                </div>
-                <div class="reciter-item">
-                    <span>میسر (عەبدولباست)</span>
-                    <i class="fas fa-play play-btn" onclick="testReciter(this, 'https://www.islamcan.com/audio/adhan/azan3.mp3')"></i>
-                </div>
-            </div>
-            <input type="hidden" id="selectedReciter" value="https://www.islamcan.com/audio/adhan/azan1.mp3">
-        </div>
     </div>
-</div>
 
-<audio id="adhanPlayer"></audio>
+    <audio id="adhanPlayer"></audio>
 
-<script src="script.js"></script>
-<script>
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-    
-    let currentPlayingIcon = null;
-    function testReciter(icon, url) {
-        const player = document.getElementById('adhanPlayer');
-        if (!player.paused && player.src === url) {
-            player.pause();
-            icon.className = 'fas fa-play play-btn';
-        } else {
-            if(currentPlayingIcon) currentPlayingIcon.className = 'fas fa-play play-btn';
-            player.src = url;
-            player.play();
-            icon.className = 'fas fa-stop play-btn';
-            currentPlayingIcon = icon;
-            document.getElementById('selectedReciter').value = url;
+    <script src="script.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
         }
-    }
 
-    const isApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    if (isApp) showContent();
+        function showSubMenu(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
 
-    function showContent() {
-        document.getElementById('install-overlay').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-    }
-</script>
+        let playingTest = null;
+        function testVoice(url, icon) {
+            const player = document.getElementById('adhanPlayer');
+            if (!player.paused && player.src === url) {
+                player.pause();
+                icon.className = 'fas fa-play';
+            } else {
+                if(playingTest) playingTest.className = 'fas fa-play';
+                player.src = url;
+                player.play();
+                icon.className = 'fas fa-stop';
+                playingTest = icon;
+            }
+        }
+
+        function setReciter(radio) {
+            localStorage.setItem('selectedReciterUrl', `https://www.islamcan.com/audio/adhan/${radio.value}`);
+        }
+
+        // بارکردنی بانگبێژی هەڵبژێردراو
+        window.onload = () => {
+            const saved = localStorage.getItem('selectedReciterUrl');
+            if(saved) {
+                const radios = document.getElementsByName('reciter');
+                radios.forEach(r => {
+                    if(`https://www.islamcan.com/audio/adhan/${r.value}` === saved) r.checked = true;
+                });
+            } else {
+                localStorage.setItem('selectedReciterUrl', 'https://www.islamcan.com/audio/adhan/azan1.mp3');
+            }
+        };
+    </script>
 </body>
 </html>
