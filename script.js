@@ -14,7 +14,7 @@ function updateDates(hijriData) {
     const now = new Date();
     document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
     document.getElementById('dateKurdi').innerText = `۲ی ڕێبەندان`;
-    document.getElementById('dateMiladi').innerText = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+    document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
 }
 
 async function fetchPrayers(city) {
@@ -46,7 +46,7 @@ function render() {
         div.className = 'prayer-row';
         div.innerHTML = `
             <div style="display:flex; align-items:center; gap:12px;">
-                ${canMute ? `<i class="fas ${mutedStatus[name] ? 'fa-volume-mute' : 'fa-volume-up'} vol-icon ${mutedStatus[name] ? '' : 'on'}" style="color:${mutedStatus[name] ? '#64748b' : '#38bdf8'}" onclick="toggleMute('${name}')"></i>` : '<i class="fas fa-sun" style="color:#eab308"></i>'}
+                ${canMute ? `<i class="fas ${mutedStatus[name] ? 'fa-volume-mute' : 'fa-volume-up'} vol-icon" style="color:${mutedStatus[name] ? '#64748b' : '#38bdf8'}" onclick="toggleMute('${name}')"></i>` : '<i class="fas fa-sun" style="color:#eab308"></i>'}
                 <span>${name}</span>
             </div>
             <div class="time">${time}</div>
@@ -63,28 +63,29 @@ function toggleMute(name) {
 
 function updateClock() {
     const now = new Date();
-    const hStr = now.getHours().toString().padStart(2, '0');
-    const mStr = now.getMinutes().toString().padStart(2, '0');
-    const sStr = now.getSeconds().toString().padStart(2, '0');
-    document.getElementById('liveClock').innerText = `${hStr}:${mStr}:${sStr}`;
+    
+    // کاتژمێری ١٢ کاتژمێری
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // ئەگەر 0 بوو بیکە بە 12
+    document.getElementById('liveClock').innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
 
     const currentSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     let nextName = ""; let minDiff = Infinity;
 
-    // دۆزینەوەی بانگی داهاتوو
-    const prayerEntries = Object.entries(prayers).filter(([n]) => n !== "ڕۆژھەڵات");
-    
-    prayerEntries.forEach(([name, time]) => {
+    Object.entries(prayers).forEach(([name, time]) => {
+        if (name === "ڕۆژھەڵات") return;
         let [h, m] = time.split(':').map(Number);
         let pSec = h * 3600 + m * 60;
         let diff = pSec - currentSec;
 
-        if (diff === 0) {
+        if (diff === 0 && !mutedStatus[name]) {
             const player = document.getElementById('adhanPlayer');
-            if (!mutedStatus[name]) {
-                player.src = localStorage.getItem('selectedReciterUrl');
-                player.play();
-            }
+            player.src = localStorage.getItem('selectedReciterUrl') || 'https://www.islamcan.com/audio/adhan/azan1.mp3';
+            player.play();
         }
         if (diff > 0 && diff < minDiff) { minDiff = diff; nextName = name; }
     });
@@ -93,8 +94,14 @@ function updateClock() {
     if (nextName) {
         const h = Math.floor(minDiff / 3600);
         const m = Math.floor((minDiff % 3600) / 60);
-        const s = minDiff % 60;
-        timerEl.innerText = `بۆ بانگی ${nextName}: ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        
+        let timeStr = "";
+        if (h > 0) {
+            timeStr = `${h}:${m.toString().padStart(2, '0')} کاتژمێری ماوە`;
+        } else {
+            timeStr = `${m} خولەکی ماوە`;
+        }
+        timerEl.innerText = `بۆ بانگی ${nextName} ${timeStr}`;
     } else {
         timerEl.innerText = "چاوەڕێی بانگی بەیانی...";
     }
