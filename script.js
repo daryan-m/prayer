@@ -1,6 +1,6 @@
 let prayers = {};
+// کێشەی (let let) لێرەدا چاککراوە و هەموو بانگەکان لە سەرەتادا بێدەنگن (false)
 let mutedStatus = JSON.parse(localStorage.getItem('mutedStatus')) || { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
-
 
 const fix = (time, min) => {
     let [h, m] = time.split(':').map(Number);
@@ -11,7 +11,6 @@ const fix = (time, min) => {
 
 function updateDates(hijriData) {
     const now = new Date();
-    // لێرەدا بەروارەکەمان ڕاست کردەوە بۆ ۳ی ڕێبەندان
     const kurdiDay = 3; 
     const kurdiMonth = "ڕێبەندان";
     const kurdiYear = 2725;
@@ -76,13 +75,11 @@ function updateClock() {
         let pSec = ph * 3600 + pm * 60;
         let diff = pSec - currentSec;
 
-        // ئەگەر کاتەکە داهاتوو بوو
         if (diff > 0 && diff < minDiff) { 
             minDiff = diff; 
             nextName = name; 
         }
 
-        // لێدانی بانگ
         if (diff === 0 && mutedStatus[name]) {
             const p = document.getElementById('adhanPlayer');
             p.src = localStorage.getItem('selectedReciterUrl') || 'https://www.islamcan.com/audio/adhan/azan1.mp3';
@@ -99,6 +96,8 @@ function updateClock() {
         timerEl.innerText = "چاوەڕێی بانگی بەیانی...";
     }
 }
+
+document.getElementById('citySelect').addEventListener('change', (e) => fetchPrayers(e.target.value));
 
 setInterval(updateClock, 1000);
 fetchPrayers('Penjwin');
