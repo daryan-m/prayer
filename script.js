@@ -1,13 +1,13 @@
 let prayers = {};
 
-// ١. زۆرکردن لە ئەپەکە بۆ ئەوەی لە یەکەم جاردا بێدەنگ بێت
-if (!localStorage.getItem('force_mute_init_v4')) {
+// زۆرکردن لە بێدەنگکردن بۆ یەکەمجار
+if (!localStorage.getItem('force_mute_v5')) {
     const defaultMuted = { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
     localStorage.setItem('p_mutedStatus', JSON.stringify(defaultMuted));
-    localStorage.setItem('force_mute_init_v4', 'true');
+    localStorage.setItem('force_mute_v5', 'true');
 }
 
-let mutedStatus = JSON.parse(localStorage.getItem('p_mutedStatus'));
+let mutedStatus = JSON.parse(localStorage.getItem('p_mutedStatus')) || { "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false };
 
 const fix = (time, min) => {
     let [h, m] = time.split(':').map(Number);
@@ -18,14 +18,16 @@ const fix = (time, min) => {
 
 function updateDates(hijriData) {
     const now = new Date();
-    // چاککردنی بەرواری کوردی بۆ ۳ی ڕێبەندان
+    // بەرواری کوردی جێگیر کرا لەسەر ٣ی ڕێبەندان
     const kurdiDay = 3; 
     const kurdiMonth = "ڕێبەندان";
     const kurdiYear = 2725;
 
-    document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
-    document.getElementById('dateKurdi').innerText = `کوردی: ${kurdiDay}ی ${kurdiMonth}ی ${kurdiYear}`;
-    document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+    if(document.getElementById('dateHijri')) {
+        document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
+        document.getElementById('dateKurdi').innerText = `کوردی: ${kurdiDay}ی ${kurdiMonth}ی ${kurdiYear}`;
+        document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+    }
 }
 
 async function fetchPrayers(city) {
@@ -39,11 +41,12 @@ async function fetchPrayers(city) {
         };
         updateDates(data.data.date.hijri);
         render();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Error fetching data:", e); }
 }
 
 function render() {
     const list = document.getElementById('prayerList');
+    if(!list) return;
     list.innerHTML = "";
     Object.entries(prayers).forEach(([name, time]) => {
         const canMute = name !== "ڕۆژھەڵات";
@@ -71,10 +74,13 @@ function toggleMute(name) {
 function updateClock() {
     const now = new Date();
     let h = now.getHours(), m = now.getMinutes().toString().padStart(2, '0'), s = now.getSeconds().toString().padStart(2, '0');
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    document.getElementById('liveClock').innerText = `${h}:${m}:${s}`;
-    document.getElementById('ampm').innerText = ampm;
+    const ampmText = h >= 12 ? 'PM' : 'AM';
+    let hDisplay = h % 12 || 12;
+    
+    if(document.getElementById('liveClock')) {
+        document.getElementById('liveClock').innerText = `${hDisplay}:${m}:${s}`;
+        document.getElementById('ampm').innerText = ampmText;
+    }
 
     const currentSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     let nextName = "", minDiff = Infinity;
@@ -94,9 +100,9 @@ function updateClock() {
     });
 
     const timerEl = document.getElementById('timerDisplay');
-    if (nextName) {
+    if (timerEl && nextName) {
         const hL = Math.floor(minDiff / 3600), mL = Math.floor((minDiff % 3600) / 60);
-        timerEl.innerText = `بۆ بانگی ${nextName} ${hL > 0 ? hL + ':' : ''}${mL} خولەکی ماوە`;
+        timerEl.innerText = `بۆ بانگی ${nextName} ${hL > 0 ? hL + ' کاتژمێر و ' : ''}${mL} خولەک ماوە`;
     }
 }
 
