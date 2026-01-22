@@ -16,7 +16,7 @@ function updateDates(hijriData) {
     const kurdiYear = 2725;
 
     document.getElementById('dateHijri').innerText = `کۆچی: ${hijriData.day} ${hijriData.month.ar} ${hijriData.year}`;
-    document.getElementById('dateKurdi').innerText = `کوردی: ${kurdiDay}ی ${kurdiMonth}ی ${kurdiYear}`;
+    document.getElementById('dateKurdi').innerText = `کوردی: ${kurdiDay}ـی ${kurdiMonth}ـی ${kurdiYear}`;
     document.getElementById('dateMiladi').innerText = `میلادی: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
 }
 
