@@ -17,7 +17,6 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
         
-        /* هێدەر کەمێک نزمتر کراوە */
         .navbar { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 0 20px; background: var(--card-bg); height: 60px; flex-shrink: 0;
@@ -38,7 +37,6 @@
         #dateHijri { font-weight: bold; font-size: 1.4rem; color: var(--accent); margin-bottom: 4px; }
         .other-dates div { font-size: 1.1rem; opacity: 0.9; margin-bottom: 3px; }
         
-        /* بەشی کاتی ماوە وەک داوات کردبوو گەورەتر و بەرەو سەرەوە */
         .countdown { 
             background: #5865f2; color: white; padding: 12px 25px; 
             border-radius: 15px; font-weight: bold; font-size: 1.1rem;
@@ -46,7 +44,6 @@
             width: 90%; text-align: center;
         }
         
-        /* کشۆی شارەکان بەرەو سەرەوە */
         select { 
             width: 100%; height: 50px; padding: 0 15px; border-radius: 12px; 
             background: var(--card-bg); color: white; border: 1px solid #334155; 
@@ -61,7 +58,6 @@
         }
         .time { font-family: monospace; font-size: 1.5rem; font-weight: bold; color: var(--accent); }
 
-        /* Sidebar & Overlay */
         .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s; padding: 25px; }
         .sidebar.active { right: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 999; }
