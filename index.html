@@ -4,68 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>کاتەکانی بانگ</title>
-    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; }
-        body { background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-
-        /* لاپەڕەی داگرتنی ئەپ */
+        body { 
+            background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; 
+            margin: 0; padding: 0; overflow-x: hidden; width: 100vw;
+        }
         #install-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--main-bg); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px;
+            text-align: center; padding: 20px; box-sizing: border-box;
         }
-        .app-logo { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--accent)); }
-        .install-btn {
-            background: var(--accent); color: #0f172a; border: none;
-            padding: 15px 40px; border-radius: 50px; font-weight: bold;
-            font-size: 1.2rem; cursor: pointer; transition: 0.3s;
-        }
-
-        /* ناوەڕۆکی سەرەکی */
-        #main-content { display: none; }
-        .app-container { width: 95%; max-width: 420px; background: var(--card-bg); margin: 20px auto; border-radius: 30px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
-        .clock { font-size: 3.2rem; font-weight: bold; color: var(--accent); margin: 10px 0; font-family: monospace; }
-        .countdown { background: #ea580c; color: white; padding: 8px 20px; border-radius: 50px; font-weight: bold; font-size: 1rem; display: inline-block; margin-bottom: 15px; }
-        .dates { font-size: 0.9rem; opacity: 0.9; line-height: 1.8; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
-        select { width: 100%; padding: 12px; border-radius: 12px; border: none; background: #334155; color: white; margin-bottom: 10px; font-size: 1rem; cursor: pointer; }
-        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 15px; }
-        .vol-icon { cursor: pointer; color: #64748b; font-size: 1.3rem; }
+        #main-content { display: none; width: 100%; max-width: 450px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
+        .app-container { background: var(--card-bg); border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .clock { font-size: 3rem; font-weight: bold; color: var(--accent); margin: 5px 0; font-family: monospace; text-align: center; }
+        .countdown { background: #ea580c; color: white; padding: 6px 15px; border-radius: 50px; font-weight: bold; display: block; margin: 0 auto 15px; width: fit-content; font-size: 0.9rem; }
+        .prayer-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 12px; }
+        .time { font-family: monospace; font-size: 1.3rem; font-weight: bold; }
+        .reciter-item { display: flex; justify-content: space-between; align-items: center; background: #334155; padding: 10px; margin-top: 5px; border-radius: 8px; font-size: 0.9rem; }
+        .play-btn { color: var(--accent); cursor: pointer; font-size: 1.2rem; }
+        .vol-icon { cursor: pointer; font-size: 1.2rem; color: #64748b; }
         .vol-icon.on { color: var(--accent); }
-        .time { font-family: monospace; font-size: 1.4rem; font-weight: bold; }
-        .test-btn { background: var(--accent); color: #0f172a; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="install-overlay">
-    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" class="app-logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/2830/2830239.png" width="100">
     <h2>ئەپی کاتەکانی بانگ</h2>
-    <p id="instruction-text">بۆ بینینی کاتەکان بە شێوەی ئەپ، تکایە جێگیری بکە</p>
-    <button class="install-btn" id="btnInstall">داگرتنی ئەپ <i class="fas fa-download"></i></button>
-    <button onclick="showContent()" style="background:none; border:none; color:#64748b; margin-top:20px; text-decoration:underline;">دواتر جێگیری دەکەم</button>
+    <p id="instruction-text">تکایە بۆ بینینی کاتەکان، ئەپەکە جێگیر بکە</p>
+    <button class="install-btn" id="btnInstall" style="background:var(--accent); border:none; padding:12px 30px; border-radius:25px; font-weight:bold;">داگرتنی ئەپ</button>
+    <button onclick="showContent()" style="background:none; border:none; color:#64748b; margin-top:15px; text-decoration:underline;">دواتر</button>
 </div>
 
 <div id="main-content">
     <div class="app-container">
         <div class="clock" id="liveClock">00:00:00</div>
-        <div class="countdown" id="timerDisplay">بارکردنی کاتەکان...</div>
+        <div id="timerDisplay" class="countdown">--:--:--</div>
         
-        <div class="dates">
-            <div id="dateKurdi"></div>
-            <div id="dateHijri"></div>
-            <div id="dateMiladi"></div>
+        <div style="text-align:center; margin-bottom:15px;">
+            <div id="dateKurdi" style="font-weight:bold; color:var(--accent);"></div>
+            <div id="dateHijri" style="font-size:0.8rem; opacity:0.7;"></div>
+            <div id="dateMiladi" style="font-size:0.8rem; opacity:0.7;"></div>
         </div>
 
-        <select id="citySelect">
-            <option value="Penjwin" selected>پێنجوێن</option>
+        <select id="citySelect" style="width:100%; padding:10px; border-radius:10px; background:#1e293b; color:white; border:1px solid #334155; margin-bottom:10px;">
+            <option value="Penjwin">پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
             <option value="Duhok">دهۆک</option>
@@ -74,54 +63,56 @@
 
         <div id="prayerList"></div>
 
-        <div style="margin-top:20px; text-align:right; border-top:1px solid #334155; padding-top:15px;">
-            <label style="font-size: 0.85rem; color: var(--accent);">هەڵبژاردنی بانگبێژ:</label>
-            <select id="reciterSelect">
-                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مەککە (شێخ عەلی مەلا)</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">مەدینە (شێخ عەبدولمەجید)</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">میسر (شێخ عەبدولباست)</option>
-            </select>
-            <button class="test-btn" onclick="testAdhan()">تاقیکردنەوەی دەنگ <i class="fas fa-play"></i></button>
+        <div style="margin-top:20px;">
+            <p style="font-size:0.85rem; color:var(--accent); margin-bottom:5px;">هەڵبژاردنی بانگبێژ و تاقیکردنەوە:</p>
+            <div id="reciterList">
+                <div class="reciter-item">
+                    <span>مەککە (شێخ عەلی مەلا)</span>
+                    <i class="fas fa-play play-btn" onclick="testReciter(this, 'https://www.islamcan.com/audio/adhan/azan1.mp3')"></i>
+                </div>
+                <div class="reciter-item">
+                    <span>مەدینە (شێخ عەبدولمەجید)</span>
+                    <i class="fas fa-play play-btn" onclick="testReciter(this, 'https://www.islamcan.com/audio/adhan/azan2.mp3')"></i>
+                </div>
+                <div class="reciter-item">
+                    <span>میسر (عەبدولباست)</span>
+                    <i class="fas fa-play play-btn" onclick="testReciter(this, 'https://www.islamcan.com/audio/adhan/azan3.mp3')"></i>
+                </div>
+            </div>
+            <input type="hidden" id="selectedReciter" value="https://www.islamcan.com/audio/adhan/azan1.mp3">
         </div>
     </div>
 </div>
 
 <audio id="adhanPlayer"></audio>
 
+<script src="script.js"></script>
 <script>
-    // چالاککردنی Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    
+    let currentPlayingIcon = null;
+    function testReciter(icon, url) {
+        const player = document.getElementById('adhanPlayer');
+        if (!player.paused && player.src === url) {
+            player.pause();
+            icon.className = 'fas fa-play play-btn';
+        } else {
+            if(currentPlayingIcon) currentPlayingIcon.className = 'fas fa-play play-btn';
+            player.src = url;
+            player.play();
+            icon.className = 'fas fa-stop play-btn';
+            currentPlayingIcon = icon;
+            document.getElementById('selectedReciter').value = url;
+        }
     }
 
-    const overlay = document.getElementById('install-overlay');
-    const content = document.getElementById('main-content');
-
-    // ئەم بەشە پشکنین دەکات: ئایا ئێستا لە ناو ئەپەکەدایە؟
-    const isApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-    if (isApp) {
-        showContent(); // ئەگەر لە ناو ئەپ بوو، یەکسەر کاتەکان نیشان بدە
-    }
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('btnInstall').onclick = () => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') showContent();
-            });
-        };
-    });
+    const isApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isApp) showContent();
 
     function showContent() {
-        overlay.style.display = 'none';
-        content.style.display = 'block';
-        document.body.style.overflow = 'auto';
+        document.getElementById('install-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
     }
 </script>
-<script src="script.js"></script>
 </body>
 </html>
