@@ -17,71 +17,81 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
         
+        /* ١- زیادکردنی بەرزی هێدەر */
         .navbar { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 15px; background: var(--card-bg); height: 50px; flex-shrink: 0;
+            padding: 0 20px; background: var(--card-bg); height: 75px; flex-shrink: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .main-container { 
             flex: 1; display: flex; flex-direction: column; align-items: center; 
-            padding: 5px 15px; width: 100%; max-width: 450px; margin: 0 auto;
-            justify-content: space-between; /* بۆشایی یەکسان بۆ ڕێگری لە سکرۆڵ */
+            padding: 10px 20px; width: 100%; max-width: 480px; margin: 0 auto;
+            justify-content: flex-start;
         }
 
-        /* کاتژمێر: وای لێکراوە AM/PM نەچێتە خوارەوە */
-        .clock-container { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-top: 5px; }
-        .clock { font-size: clamp(2.5rem, 12vw, 3.8rem); font-weight: bold; font-family: monospace; line-height: 1; }
-        .ampm { font-size: 1.2rem; color: var(--accent); font-weight: bold; }
+        /* ٢- چاککردنی کاتژمێر */
+        .clock-container { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-top: 5px; }
+        .clock { font-size: clamp(3rem, 14vw, 4.2rem); font-weight: bold; font-family: monospace; line-height: 1; }
+        .ampm { font-size: 1.4rem; color: var(--accent); font-weight: bold; }
         
-        .date-section { text-align: center; line-height: 1.3; }
-        #dateHijri { font-weight: bold; font-size: 1.2rem; color: var(--accent); }
-        .other-dates { font-size: 0.85rem; opacity: 0.8; }
+        /* ٣- بەروارەکان: گەورەتر و بۆشایی زیاتر */
+        .date-section { text-align: center; margin: 15px 0; }
+        #dateHijri { font-weight: bold; font-size: 1.5rem; color: var(--accent); margin-bottom: 8px; }
+        .other-dates div { font-size: 1.1rem; opacity: 0.9; margin-bottom: 5px; }
         
+        /* ٤- کاتی ماوە: گەورەتر و چوونە سەرەوە */
         .countdown { 
-            background: #ea580c; color: white; padding: 6px 15px; 
-            border-radius: 50px; font-weight: bold; font-size: 0.85rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin: 2px 0;
+            background: #ea580c; color: white; padding: 12px 25px; 
+            border-radius: 15px; font-weight: bold; font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin: 10px 0 20px 0;
+            width: 90%; text-align: center;
         }
         
+        /* ٥- کشۆی شارەکان: بەرزتر و چوونە سەرەوە */
         select { 
-            width: 100%; padding: 8px; border-radius: 10px; 
-            background: var(--card-bg); color: white; border: 1px solid #334155; font-size: 0.9rem;
+            width: 100%; height: 50px; padding: 0 15px; border-radius: 12px; 
+            background: var(--card-bg); color: white; border: 1px solid #334155; 
+            font-size: 1.1rem; margin-bottom: 20px; outline: none;
         }
 
-        .prayer-list { width: 100%; display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; }
+        /* ٦- کاتەکانی بانگ: چوونە سەرەوە */
+        .prayer-list { width: 100%; display: flex; flex-direction: column; gap: 6px; }
         .prayer-row { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 15px; background: var(--card-bg); 
-            border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 20px; background: var(--card-bg); 
+            border-radius: 14px; border: 1px solid rgba(255,255,255,0.05);
         }
-        .time { font-family: monospace; font-size: 1.3rem; font-weight: bold; color: var(--accent); }
+        .time { font-family: monospace; font-size: 1.5rem; font-weight: bold; color: var(--accent); }
 
-        /* Sidebar Styles */
-        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s; padding: 20px; }
+        /* Sidebar & Overlay */
+        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s; padding: 25px; }
         .sidebar.active { right: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 999; }
         .overlay.active { display: block; }
+        .sidebar-item { padding: 15px 0; border-bottom: 1px solid #1f2937; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
     <div class="navbar">
-        <div style="font-weight: bold;">کاتەکانی بانگ</div>
-        <i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i>
+        <div style="font-weight: bold; font-size: 1.3rem;">کاتەکانی بانگ</div>
+        <i class="fas fa-bars" onclick="toggleMenu()" style="font-size: 1.7rem; color: var(--accent); cursor: pointer;"></i>
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="sidebar" id="sidebar">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #334155; padding-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border-bottom:1px solid #334155; padding-bottom:15px;">
             <h3>ڕێکخستنەکان</h3>
-            <i class="fas fa-times" onclick="toggleMenu()"></i>
+            <i class="fas fa-times" onclick="toggleMenu()" style="cursor:pointer; font-size: 1.4rem;"></i>
         </div>
-        <div onclick="showSubMenu('reciters')" style="padding:15px 0; border-bottom:1px solid #1f2937; cursor:pointer;"><i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ</div>
-        <div id="reciters" style="display:none; padding:10px 0;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>شێخ عەلی مەلا</span><input type="radio" name="rec" value="azan1.mp3" checked onchange="setReciter(this)"></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>شێخ عەبدولمەجید</span><input type="radio" name="rec" value="azan2.mp3" onchange="setReciter(this)"></div>
+        <div class="sidebar-item" onclick="showSubMenu('reciters')"><i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ</div>
+        <div id="reciters" style="display:none; padding:10px 10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>شێخ عەلی مەلا</span><input type="radio" name="rec" value="azan1.mp3" checked onchange="setReciter(this)"></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>شێخ عەبدولمەجید</span><input type="radio" name="rec" value="azan2.mp3" onchange="setReciter(this)"></div>
             <div style="display:flex; justify-content:space-between;"><span>شێخ عەبدولباست</span><input type="radio" name="rec" value="azan3.mp3" onchange="setReciter(this)"></div>
         </div>
-        <div style="padding:15px 0;"><a href="https://www.youtube.com/@daryan111" target="_blank" style="color:inherit; text-decoration:none;"><i class="fab fa-youtube" style="color:red;"></i> یوتیوب</a></div>
+        <div class="sidebar-item"><a href="https://www.youtube.com/@daryan111" target="_blank" style="color:inherit; text-decoration:none;"><i class="fab fa-youtube" style="color:red;"></i> یوتیوب</a></div>
+        <div class="sidebar-item" onclick="alert('ئەم ئەپە کاتەکانی بانگ بۆ شاری پێنجوێن و دەوروبەری نیشان دەدات.\nگەشەپێدەر: داریان')"><i class="fas fa-info-circle"></i> دەربارە</div>
     </div>
 
     <div class="main-container">
@@ -108,6 +118,7 @@
 
         <div class="prayer-list" id="prayerList"></div>
     </div>
+
     <audio id="adhanPlayer"></audio>
     <script src="script.js"></script>
     <script>
