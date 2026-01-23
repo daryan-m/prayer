@@ -21,7 +21,7 @@ async function getPrayerData(city) {
         const data = await res.json();
         const t = data.data.timings;
         
-        // ڕێکخستنی مێژووەکان
+        // ڕێکخستنی تاریخەکان
         document.getElementById('hijriDate').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
         
         const d = new Date();
@@ -30,17 +30,11 @@ async function getPrayerData(city) {
         const kurdishOption = { day: 'numeric', month: 'long', year: 'numeric' };
         document.getElementById('kurdishDate').innerText = `کوردی: ${d.toLocaleDateString('ku-IQ', kurdishOption)}`;
 
-        // تەنها ٥ کاتە سەرەکییەکە هەڵدەبژێرین
-        prayers = { 
-            "بەیانی": t.Fajr, 
-            "نیوەڕۆ": t.Dhuhr, 
-            "عەسر": t.Asr, 
-            "مەغریب": t.Maghrib, 
-            "عیشا": t.Isha 
-        };
+        // ٥ کاتە سەرەکییەکە
+        prayers = { "بەیانی": t.Fajr, "نیوەڕۆ": t.Dhuhr, "عەسر": t.Asr, "مەغریب": t.Maghrib, "عیشا": t.Isha };
         renderList();
     } catch (e) {
-        console.log("هەڵە لە وەرگرتنی زانیارییەکان");
+        console.log("هەڵە لە وەرگرتنی داتا");
     }
 }
 
