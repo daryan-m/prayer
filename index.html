@@ -2,117 +2,73 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>کاتەکانی بانگ</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --sidebar-bg: #111827; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; 
-            min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
-        }
-        /* گەورەکردنی فۆنتی هێدەر */
-        .navbar { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 20px; background: var(--card-bg); height: 60px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .nav-title { font-weight: bold; font-size: 1.4rem; }
-
-        .main-container { 
-            flex: 1; display: flex; flex-direction: column; align-items: center; 
-            padding: 15px 20px; width: 100%; max-width: 450px; margin: 0 auto;
-        }
-        .clock-container { text-align: center; margin-bottom: 10px; }
-        .clock { font-size: 3.4rem; font-weight: bold; font-family: monospace; }
-        .ampm { font-size: 1.4rem; color: var(--accent); font-weight: bold; text-transform: uppercase; }
-        
-        .date-section { text-align: center; margin-bottom: 15px; }
-        #dateHijri { font-weight: bold; font-size: 1.3rem; color: var(--accent); }
-        
-        /* گەورەکردنی کاتی ماوە */
-        .countdown { 
-            background: #151b54; color: white; padding: 14px; border-radius: 12px; 
-            width: 100%; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem;
-        }
-        
-        /* گەورەکردنی فۆنتی شارەکان (پێنجوێن) */
-        select { 
-            width: 100%; height: 50px; border-radius: 10px; background: var(--card-bg); 
-            color: white; border: 1px solid #334155; padding: 0 10px; margin-bottom: 15px; font-size: 1.1rem; font-weight: bold;
-        }
-
-        .prayer-list { width: 100%; display: flex; flex-direction: column; gap: 8px; }
-        .prayer-row { 
-            display: flex; justify-content: space-between; padding: 12px 18px; 
-            background: var(--card-bg); border-radius: 12px; align-items: center;
-        }
-        /* بچووککردنەوەی فۆنتی ناو و کاتی بانگەکان لە لیستەکەدا */
-        .prayer-name { font-size: 1rem; }
-        .time { font-family: monospace; font-size: 1.3rem; color: var(--accent); font-weight: bold; }
-
-        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s; padding: 25px; }
-        .sidebar.active { right: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 999; }
-        .overlay.active { display: block; }
-        .sidebar-item { padding: 15px 0; border-bottom: 1px solid #1f2937; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 1.1rem; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="navbar">
-        <div class="nav-title">کاتەکانی بانگ</div>
-        <i class="fas fa-bars" onclick="toggleMenu()" style="color: var(--accent); cursor: pointer; font-size: 1.6rem;"></i>
+        <div class="nav-title"><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
+        <i class="fas fa-bars" onclick="toggleMenu()" id="menuBtn"></i>
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="sidebar" id="sidebar">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border-bottom:1px solid #334155; padding-bottom:15px;">
-            <h3 style="margin:0;">ڕێکخستنەکان</h3>
-            <i class="fas fa-times" onclick="toggleMenu()" style="cursor:pointer; font-size: 1.4rem;"></i>
+        <div class="sidebar-mosque-bg"></div>
+        <div class="sidebar-header">
+            <h3>ڕێکخستنەکان</h3>
+            <i class="fas fa-times" onclick="toggleMenu()"></i>
         </div>
-        <div class="sidebar-item" onclick="showSubMenu('reciters')"><i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ</div>
-        <div id="reciters" style="display:none; padding:10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>شێخ عەلی مەلا</span><input type="radio" name="rec" value="azan1.mp3" checked onchange="setReciter(this)"></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>شێخ عەبدولمەجید</span><input type="radio" name="rec" value="azan2.mp3" onchange="setReciter(this)"></div>
-            <div style="display:flex; justify-content:space-between;"><span>شێخ عەبدولباست</span><input type="radio" name="rec" value="azan3.mp3" onchange="setReciter(this)"></div>
+        
+        <div class="sidebar-item" onclick="showSubMenu('reciters')">
+            <i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ
         </div>
-        <div class="sidebar-item"><a href="https://www.youtube.com/@daryan111" target="_blank" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:12px;"><i class="fab fa-youtube" style="color:red;"></i> یوتیوب</a></div>
-        <div class="sidebar-item" onclick="alert('گەشەپێدەر: داریان')"><i class="fas fa-info-circle"></i> دەربارە</div>
+        <div id="reciters" class="submenu">
+            <div class="reciter-opt"><span>عەلی مەلا</span><input type="radio" name="rec" value="azan1.mp3" checked onchange="setReciter(this)"></div>
+            <div class="reciter-opt"><span>عەبدولمەجید</span><input type="radio" name="rec" value="azan2.mp3" onchange="setReciter(this)"></div>
+            <div class="reciter-opt"><span>عەبدولباست</span><input type="radio" name="rec" value="azan3.mp3" onchange="setReciter(this)"></div>
+        </div>
+
+        <div class="sidebar-item" id="installBtnRow" style="display:none;" onclick="installPWA()">
+            <i class="fas fa-download" style="color: #22c55e;"></i> داگرتنی ئەپ
+        </div>
+
+        <div class="sidebar-item">
+            <a href="https://www.youtube.com/@daryan111" target="_blank" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
+                <i class="fab fa-youtube" style="color:red;"></i> یوتیوب
+            </a>
+        </div>
+
+        <div class="sidebar-item" onclick="showAbout()">
+            <i class="fas fa-info-circle"></i> دەربارە
+        </div>
     </div>
 
     <div class="main-container">
+        <div class="mosque-bg"></div>
         <div class="clock-container">
             <span class="clock" id="liveClock">00:00:00</span>
             <span class="ampm" id="ampm">AM</span>
         </div>
         <div class="date-section">
-            <div id="dateHijri">بارکردن...</div>
-            <div style="font-size: 1.1rem; margin-top: 4px;">کوردی: ٣ی ڕێبەندانی ٢٧٢٥</div>
-            <div id="dateMiladi" style="opacity: 0.7; font-size: 0.9rem;"></div>
+            <div id="dateHijri">...</div>
+            <div class="kurdi-date">کوردی: ٣ی ڕێبەندانی ٢٧٢٥</div>
+            <div id="dateMiladi">...</div>
         </div>
-        <div id="timerDisplay" class="countdown">چاوەڕێ بکە...</div>
+        <div id="timerDisplay" class="countdown">بارکردن...</div>
         <select id="citySelect">
-            <option value="Penjwin">پێنجوێن</option>
+            <option value="Penjwin" selected>پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
         </select>
         <div class="prayer-list" id="prayerList"></div>
     </div>
 
+    <div id="update-toast" class="toast">وەشانێکی نوێ بەردەستە! <button onclick="location.reload()">نوێکردنەوە</button></div>
     <audio id="adhanPlayer"></audio>
     <script src="script.js"></script>
-    <script>
-        function toggleMenu() { 
-            document.getElementById('sidebar').classList.toggle('active'); 
-            document.getElementById('overlay').classList.toggle('active'); 
-        }
-        function showSubMenu(id) { 
-            const el = document.getElementById(id); 
-            el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
-        }
-        function setReciter(r) { 
-            localStorage.setItem('selectedReciterUrl', `https://www.islamcan.com/audio/adhan/${r.value}`); 
-        }
-    </script>
 </body>
 </html>
