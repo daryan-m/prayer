@@ -2,77 +2,58 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>کاتەکانی بانگ</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وەشانی نوێ </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="navbar">
-        <div class="nav-title"><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
-        <i class="fas fa-bars" onclick="toggleMenu()" id="menuBtn"></i>
+        <div style="font-size: 1.1rem;"><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
+        <i class="fas fa-bars" onclick="toggleSidebar()"></i>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-mosque-bg"></div>
         <div class="sidebar-header">
-            <h3>ڕێکخستنەکان</h3>
-            <i class="fas fa-times" onclick="toggleMenu()"></i>
+            <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
+            <h3>ڕێکخستن</h3>
         </div>
-        
-        <div class="sidebar-item" onclick="showSubMenu('reciters')">
-            <i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ
-        </div>
-        <div id="reciters" class="submenu">
-            <div class="reciter-opt"><span>عەلی مەلا</span><input type="radio" name="rec" value="azan1.mp3" checked onchange="setReciter(this)"></div>
-            <div class="reciter-opt"><span>عەبدولمەجید</span><input type="radio" name="rec" value="azan2.mp3" onchange="setReciter(this)"></div>
-            <div class="reciter-opt"><span>عەبدولباست</span><input type="radio" name="rec" value="azan3.mp3" onchange="setReciter(this)"></div>
-        </div>
-
-        <div class="sidebar-item" id="installBtnRow" style="display:none;" onclick="installPWA()">
-            <i class="fas fa-download" style="color: #22c55e;"></i> داگرتنی ئەپ
-        </div>
-
-        <div class="sidebar-item">
-            <a href="https://www.youtube.com/@daryan111" target="_blank" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
-                <i class="fab fa-youtube" style="color:red;"></i> یوتیوب
-            </a>
-        </div>
-
-        <div class="sidebar-item" onclick="showAbout()">
-            <i class="fas fa-info-circle"></i> دەربارە
-        </div>
+        <div class="sidebar-item" onclick="previewAdhan()"><i class="fas fa-play"></i> تاقیکردنەوەی دەنگ</div>
+        <div class="sidebar-item" onclick="showAbout()"><i class="fas fa-info-circle"></i> دەربارە</div>
     </div>
 
-    <div class="main-container">
-        <div class="mosque-bg"></div>
-        <div class="clock-container">
-            <span class="clock" id="liveClock">00:00:00</span>
-            <span class="ampm" id="ampm">AM</span>
-        </div>
-        <div class="date-section">
-            <div id="dateHijri">...</div>
-            <div class="kurdi-date">کوردی: ٣ی ڕێبەندانی ٢٧٢٥</div>
-            <div id="dateMiladi">...</div>
-        </div>
-        <div id="timerDisplay" class="countdown">بارکردن...</div>
-        <select id="citySelect">
-            <option value="Penjwin" selected>پێنجوێن</option>
+    <<div class="main-content">
+    <img src="https://i.imgur.com/vH97Nl8.png" class="mosque-bg" />
+
+    <div class="clock-box">
+        <span class="clock" id="liveClock">00:00:00</span>
+        <span class="ampm" id="ampm">AM</span>
+    </div>
+    
+    </div>
+
+        <div class="date-container">
+    <div class="hijri-row" id="hijriDate">کۆچی: --/--/----</div>
+    <div class="kurdish-row">
+        <span id="miladiDate">میلادی: --/--/----</span>
+        <span class="separator">|</span>
+        <span id="kurdishDate">کوردی: --/--/----</span>
+    </div>
+</div>
+
+        <div class="timer" id="timeLeft">...</div>
+        <select id="citySelect" onchange="changeCity()">
+            <option value="Penjwin">پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
         </select>
         <div class="prayer-list" id="prayerList"></div>
     </div>
 
-    <div id="update-toast" class="toast">
-    وەشانێکی نوێ بەردەستە! 
-    <button onclick="refreshApp()">نوێکردنەوە</button>
-</div>
-
-    <audio id="adhanPlayer"></audio>
+    <audio id="player"></audio>
     <script src="script.js"></script>
 </body>
 </html>

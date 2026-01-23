@@ -4,6 +4,11 @@
   "icons": [
     {
       "src": "https://i.imgur.com/vH97Nl8.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.imgur.com/vH97Nl8.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
