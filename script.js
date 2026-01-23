@@ -1,8 +1,11 @@
 let prayers = {};
-// بە زۆر ناچارکردنی بێدەنگی لە یەکەمجاردا
-if (!localStorage.getItem('init_v10')) {
-    localStorage.setItem('p_mutedStatus', JSON.stringify({ "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false }));
-    localStorage.setItem('init_v10', 'true');
+
+// Resetکردنی زانیارییە کۆنەکان بۆ ئەوەی بێدەنگ بن
+if (!localStorage.getItem('app_v11_fix')) {
+    localStorage.setItem('p_mutedStatus', JSON.stringify({ 
+        "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false 
+    }));
+    localStorage.setItem('app_v11_fix', 'true');
 }
 
 let mutedStatus = JSON.parse(localStorage.getItem('p_mutedStatus'));
@@ -29,57 +32,64 @@ async function fetchPrayers(city) {
             "خەوتنان": fixTime(t.Isha, 2) 
         };
 
-        // نیشاندانی بەروارەکان
         document.getElementById('dateHijri').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
-        document.getElementById('dateKurdi').innerText = `کوردی: ٣ی ڕێبەندی ٢٧٢٥`;
         document.getElementById('dateMiladi').innerText = `میلادی: ${new Date().toLocaleDateString()}`;
         
         renderList();
-    } catch (e) { console.log(e); }
+    } catch (e) { console.error("Error fetching data:", e); }
 }
 
 function renderList() {
     const list = document.getElementById('prayerList');
-    list.innerHTML = "";
+    if (!list) return;
+    
+    let htmlContent = "";
     Object.entries(prayers).forEach(([name, time]) => {
         const canMute = name !== "ڕۆژھەڵات";
-        const isMuted = mutedStatus[name];
-        list.innerHTML += `
+        const isMuted = mutedStatus[name]; // ئەگەر false بێت واتە بێدەنگە
+        
+        htmlContent += `
             <div class="prayer-row">
-                <div style="display:flex; align-items:center; gap:10px;">
+                <div style="display:flex; align-items:center; gap:12px;">
                     <i class="fas ${canMute ? (isMuted ? 'fa-volume-up' : 'fa-volume-mute') : 'fa-sun'}" 
-                       style="color:${canMute ? (isMuted ? '#38bdf8' : '#64748b') : '#eab308'}; cursor:pointer;"
-                       onclick="${canMute ? `toggleMute('${name}')` : ''}"></i>
-                    <span>${name}</span>
+                       style="color:${canMute ? (isMuted ? '#38bdf8' : '#64748b') : '#eab308'}; cursor:pointer; font-size:1.2rem;"
+                       onclick="handleToggle('${name}')"></i>
+                    <span style="font-size:1.1rem;">${name}</span>
                 </div>
                 <div class="time">${time}</div>
             </div>`;
     });
+    list.innerHTML = htmlContent;
 }
 
-function toggleMute(name) {
+// ناوی فەنکشنەکە گۆڕدرا بۆ ئەوەی کێشەی تێ نەکەوێت
+window.handleToggle = function(name) {
     mutedStatus[name] = !mutedStatus[name];
     localStorage.setItem('p_mutedStatus', JSON.stringify(mutedStatus));
     renderList();
-}
+};
 
 function updateClock() {
     const now = new Date();
-    document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).split(' ')[0];
-    document.getElementById('ampm').innerText = now.getHours() >= 12 ? 'PM' : 'AM';
+    const timeStr = now.toLocaleTimeString('en-GB', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const [time, ampm] = timeStr.split(' ');
+    
+    document.getElementById('liveClock').innerText = time;
+    document.getElementById('ampm').innerText = ampm;
 
     const currentSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     let next = null; let minDiff = Infinity;
 
     Object.entries(prayers).forEach(([name, time]) => {
         if (name === "ڕۆژھەڵات") return;
-        let [h, m] = time.split(':').map(Number);
-        let diff = (h * 3600 + m * 60) - currentSec;
+        let [ph, pm] = time.split(':').map(Number);
+        let diff = (ph * 3600 + pm * 60) - currentSec;
         if (diff > 0 && diff < minDiff) { minDiff = diff; next = name; }
+        
         if (diff === 0 && mutedStatus[name]) {
-            let audio = document.getElementById('adhanPlayer');
+            const audio = document.getElementById('adhanPlayer');
             audio.src = "https://www.islamcan.com/audio/adhan/azan1.mp3";
-            audio.play();
+            audio.play().catch(e => console.log("Audio play blocked"));
         }
     });
 
@@ -89,5 +99,6 @@ function updateClock() {
     }
 }
 
+document.getElementById('citySelect').addEventListener('change', (e) => fetchPrayers(e.target.value));
 setInterval(updateClock, 1000);
 fetchPrayers('Penjwin');
