@@ -18,27 +18,39 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
             <h3>ڕێکخستن</h3>
+            <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
         </div>
-        <div class="sidebar-item" onclick="previewAdhan()"><i class="fas fa-play"></i> تاقیکردنەوەی دەنگ</div>
-        <div class="sidebar-item" onclick="showAbout()"><i class="fas fa-info-circle"></i> دەربارە</div>
+        
+        <div class="sidebar-section">
+            <h4><i class="fas fa-volume-up"></i> هەڵبژاردنی بانگبێژ</h4>
+            <select id="adhanSelect" onchange="previewAdhan()">
+                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مەککە (شێخ عەلی مەلا)</option>
+                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">مەدینە</option>
+                <option value="https://www.islamcan.com/audio/adhan/azan16.mp3">عبدالباسط عبدالصمد</option>
+            </select>
+            <button class="test-btn" onclick="previewAdhan()"><i class="fas fa-play"></i> تاقیکردنەوە</button>
+        </div>
+
+        <div class="sidebar-item" onclick="alert('گەشەپێدەر: داریان')">
+            <i class="fas fa-info-circle"></i> دەربارە
+        </div>
     </div>
 
     <div class="main-content">
-        <img src="https://i.imgur.com/vH97Nl8.png" class="mosque-bg" alt="mosque" />
-        
-        <div class="clock-box">
-            <span class="clock" id="liveClock">00:00:00</span>
-            <span class="ampm" id="ampm">AM</span>
-        </div>
-
-        <div class="date-container">
-            <div class="hijri-row" id="hijriDate">بارکردنی مێژووی کۆچی...</div>
-            <div class="kurdish-row">
-                <span id="miladiDate">--/--/----</span>
-                <span class="separator">|</span>
-                <span id="kurdishDate">بارکردنی مێژووی کوردی...</span>
+        <div class="header-card">
+            <img src="https://i.imgur.com/vH97Nl8.png" class="mosque-top-img" />
+            <div class="clock-box">
+                <span class="clock" id="liveClock">00:00:00</span>
+                <span class="ampm" id="ampm">AM</span>
+            </div>
+            <div class="date-container">
+                <div class="hijri-row" id="hijriDate">...</div>
+                <div class="kurdish-row">
+                    <span id="miladiDate">...</span>
+                    <span class="separator">|</span>
+                    <span id="kurdishDate">...</span>
+                </div>
             </div>
         </div>
 
@@ -48,8 +60,6 @@
             <option value="Penjwin">پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
-            <option value="Duhok">دهۆک</option>
-            <option value="Kirkuk">کەرکوک</option>
         </select>
 
         <div class="prayer-list" id="prayerList"></div>
