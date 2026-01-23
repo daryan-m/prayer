@@ -69,24 +69,31 @@ window.handleToggle = function(name) {
 
 function updateClock() {
     const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-GB', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const [time, ampm] = timeStr.split(' ');
+    let h = now.getHours();
+    let m = now.getMinutes().toString().padStart(2, '0');
+    let s = now.getSeconds().toString().padStart(2, '0');
+    let ampm = h >= 12 ? 'PM' : 'AM';
+    let h12 = h % 12 || 12;
     
     if(document.getElementById('liveClock')){
-        document.getElementById('liveClock').innerText = time;
+        document.getElementById('liveClock').innerText = `${h12}:${m}:${s}`;
         document.getElementById('ampm').innerText = ampm;
     }
 
-    const currentSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const currentSec = h * 3600 + now.getMinutes() * 60 + now.getSeconds();
     let next = null; let minDiff = Infinity;
 
     Object.entries(prayers).forEach(([name, time]) => {
         if (name === "ڕۆژھەڵات") return;
         let [ph, pm] = time.split(':').map(Number);
-        let diff = (ph * 3600 + pm * 60) - currentSec;
-        if (diff > 0 && diff < minDiff) { minDiff = diff; next = name; }
+        let pSec = ph * 3600 + pm * 60;
+        let diff = pSec - currentSec;
         
-        if (diff === 0 && mutedStatus[name]) {
+        if (diff <= 0) diff += 24 * 3600;
+
+        if (diff < minDiff) { minDiff = diff; next = name; }
+        
+        if (diff === 24 * 3600 && mutedStatus[name]) {
             const audio = document.getElementById('adhanPlayer');
             audio.src = localStorage.getItem('selectedReciterUrl') || "https://www.islamcan.com/audio/adhan/azan1.mp3";
             audio.play().catch(e => console.log("Play error:", e));
@@ -94,8 +101,16 @@ function updateClock() {
     });
 
     if (next && document.getElementById('timerDisplay')) {
-        let mLeft = Math.floor(minDiff / 60);
-        document.getElementById('timerDisplay').innerText = `بۆ بانگی ${next} ${mLeft} خولەک ماوە`;
+        let hoursLeft = Math.floor(minDiff / 3600);
+        let minsLeft = Math.floor((minDiff % 3600) / 60);
+        
+        let timerText = "";
+        if(hoursLeft > 0) {
+            timerText += hoursLeft + " کاتژمێر و ";
+        }
+        timerText += minsLeft + " خولەک ماوە بۆ بانگی " + next;
+        
+        document.getElementById('timerDisplay').innerText = timerText;
     }
 }
 
