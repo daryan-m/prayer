@@ -1,61 +1,35 @@
 :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; }
-body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; }
+body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; direction: rtl; }
 
-/* Navbar */
-.navbar { display: flex; justify-content: space-between; padding: 15px 20px; background: var(--card); border-bottom: 2px solid var(--accent); }
+.navbar { display: flex; justify-content: space-between; padding: 15px 20px; background: var(--card); border-bottom: 2px solid var(--accent); position: relative; z-index: 10; }
 
-/* Sidebar & Close Button (X چووە بۆ چەپ) */
-.sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: #111827; z-index: 1000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--accent); }
+/* Sidebar & Close Button Left */
+.sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: #111827; z-index: 1000; transition: 0.3s; padding: 20px; }
 .sidebar.active { right: 0; }
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse; margin-bottom: 25px; }
 .close-btn { cursor: pointer; color: #ff4444; font-size: 1.5rem; }
-.sidebar-item { padding: 15px 0; border-bottom: 1px solid #1e293b; cursor: pointer; }
+.sidebar-item { padding: 15px 0; border-bottom: 1px solid #1e293b; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 
 /* Clock Section */
 .clock-box { display: flex; align-items: baseline; justify-content: center; margin: 20px 0 10px 0; }
 .clock { font-size: 2.3rem; font-weight: bold; font-family: monospace; }
 .ampm { font-size: 1rem; color: var(--accent); margin-right: 10px; font-weight: bold; }
 
-/* Countdown Timer */
-.timer { color: #facc15; text-align: center; margin-bottom: 20px; font-weight: bold; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 50px; font-size: 0.9rem; }
+/* Dates Section */
+.date-container { text-align: center; margin-bottom: 15px; background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 15px; width: 90%; max-width: 400px; }
+.hijri-row { color: var(--accent); font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+.kurdish-row { font-size: 0.85rem; opacity: 0.8; display: flex; justify-content: center; gap: 10px; }
+.separator { color: var(--accent); opacity: 0.5; }
 
-/* Mosque Background Image Fix */
+/* Countdown & Mosque Bg */
+.timer { color: #facc15; text-align: center; margin-bottom: 20px; font-weight: bold; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 50px; font-size: 0.9rem; }
 .main-content { position: relative; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 80vh; }
 .mosque-bg { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 80%; opacity: 0.1; z-index: -1; pointer-events: none; }
 
-/* City Selector & List */
+/* City Selector & Prayer Rows */
 select { width: 100%; max-width: 320px; padding: 12px; border-radius: 10px; background: var(--card); color: white; border: 1px solid var(--accent); margin-bottom: 20px; font-size: 1rem; }
 .prayer-list { width: 100%; max-width: 400px; }
 .prayer-row { display: flex; justify-content: space-between; background: var(--card); padding: 15px 25px; margin-bottom: 10px; border-radius: 12px; border-right: 5px solid var(--accent); }
 
 .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; z-index: 999; }
 .overlay.active { display: block; }
-
-.date-container {
-    text-align: center;
-    margin-bottom: 15px;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 10px;
-    border-radius: 15px;
-    width: 90%;
-}
-
-.hijri-row {
-    color: var(--accent);
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-}
-
-.kurdish-row {
-    font-size: 0.85rem;
-    opacity: 0.8;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.separator {
-    color: var(--accent);
-    opacity: 0.5;
-}
