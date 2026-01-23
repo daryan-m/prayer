@@ -6,15 +6,15 @@
     <title>کاتەکانی بانگ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; }
+        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --sidebar-bg: #111827; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             background: var(--main-bg); color: white; font-family: 'Segoe UI', sans-serif; 
-            min-height: 100vh; display: flex; flex-direction: column; 
+            min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
         }
         .navbar { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 20px; background: var(--card-bg); height: 55px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0 20px; background: var(--card-bg); height: 60px; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .main-container { 
             flex: 1; display: flex; flex-direction: column; align-items: center; 
@@ -39,12 +39,34 @@
             background: var(--card-bg); border-radius: 12px; align-items: center;
         }
         .time { font-family: monospace; font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+
+        /* Sidebar Styles */
+        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s; padding: 25px; }
+        .sidebar.active { right: 0; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 999; }
+        .overlay.active { display: block; }
+        .sidebar-item { padding: 15px 0; border-bottom: 1px solid #1f2937; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
     <div class="navbar">
         <div style="font-weight: bold;">کاتەکانی بانگ</div>
-        <i class="fas fa-bars" style="color: var(--accent);"></i>
+        <i class="fas fa-bars" onclick="toggleMenu()" style="color: var(--accent); cursor: pointer; font-size: 1.7rem;"></i>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border-bottom:1px solid #334155; padding-bottom:15px;">
+            <h3 style="margin:0;">ڕێکخستنەکان</h3>
+            <i class="fas fa-times" onclick="toggleMenu()" style="cursor:pointer; font-size: 1.7rem;"></i>
+        </div>
+        <div class="sidebar-item" onclick="showSubMenu('reciters')"><i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ</div>
+        <div id="reciters" style="display:none; padding:10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>شێخ عەلی مەلا</span><input type="radio" name="rec" value="azan1.mp3" checked onchange="setReciter(this)"></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>شێخ عەبدولمەجید</span><input type="radio" name="rec" value="azan2.mp3" onchange="setReciter(this)"></div>
+            <div style="display:flex; justify-content:space-between;"><span>شێخ عەبدولباست</span><input type="radio" name="rec" value="azan3.mp3" onchange="setReciter(this)"></div>
+        </div>
+        <div class="sidebar-item" onclick="alert('گەشەپێدەر: داریان')"><i class="fas fa-info-circle"></i> دەربارە</div>
     </div>
 
     <div class="main-container">
@@ -68,5 +90,18 @@
 
     <audio id="adhanPlayer"></audio>
     <script src="script.js"></script>
+    <script>
+        function toggleMenu() { 
+            document.getElementById('sidebar').classList.toggle('active'); 
+            document.getElementById('overlay').classList.toggle('active'); 
+        }
+        function showSubMenu(id) { 
+            const el = document.getElementById(id); 
+            el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
+        }
+        function setReciter(r) { 
+            localStorage.setItem('selectedReciterUrl', `https://www.islamcan.com/audio/adhan/${r.value}`); 
+        }
+    </script>
 </body>
 </html>
