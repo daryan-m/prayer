@@ -1,11 +1,10 @@
 let prayers = {};
 
-// Resetکردنی زانیارییە کۆنەکان بۆ ئەوەی بێدەنگ بن
-if (!localStorage.getItem('app_v11_fix')) {
+if (!localStorage.getItem('app_v12_final')) {
     localStorage.setItem('p_mutedStatus', JSON.stringify({ 
         "بەیانی": false, "نیوەڕۆ": false, "عەسر": false, "ئێوارە": false, "خەوتنان": false 
     }));
-    localStorage.setItem('app_v11_fix', 'true');
+    localStorage.setItem('app_v12_final', 'true');
 }
 
 let mutedStatus = JSON.parse(localStorage.getItem('p_mutedStatus'));
@@ -36,7 +35,7 @@ async function fetchPrayers(city) {
         document.getElementById('dateMiladi').innerText = `میلادی: ${new Date().toLocaleDateString()}`;
         
         renderList();
-    } catch (e) { console.error("Error fetching data:", e); }
+    } catch (e) { console.error("Error:", e); }
 }
 
 function renderList() {
@@ -46,7 +45,7 @@ function renderList() {
     let htmlContent = "";
     Object.entries(prayers).forEach(([name, time]) => {
         const canMute = name !== "ڕۆژھەڵات";
-        const isMuted = mutedStatus[name]; // ئەگەر false بێت واتە بێدەنگە
+        const isMuted = mutedStatus[name];
         
         htmlContent += `
             <div class="prayer-row">
@@ -62,7 +61,6 @@ function renderList() {
     list.innerHTML = htmlContent;
 }
 
-// ناوی فەنکشنەکە گۆڕدرا بۆ ئەوەی کێشەی تێ نەکەوێت
 window.handleToggle = function(name) {
     mutedStatus[name] = !mutedStatus[name];
     localStorage.setItem('p_mutedStatus', JSON.stringify(mutedStatus));
@@ -74,8 +72,10 @@ function updateClock() {
     const timeStr = now.toLocaleTimeString('en-GB', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const [time, ampm] = timeStr.split(' ');
     
-    document.getElementById('liveClock').innerText = time;
-    document.getElementById('ampm').innerText = ampm;
+    if(document.getElementById('liveClock')){
+        document.getElementById('liveClock').innerText = time;
+        document.getElementById('ampm').innerText = ampm;
+    }
 
     const currentSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     let next = null; let minDiff = Infinity;
@@ -88,12 +88,12 @@ function updateClock() {
         
         if (diff === 0 && mutedStatus[name]) {
             const audio = document.getElementById('adhanPlayer');
-            audio.src = "https://www.islamcan.com/audio/adhan/azan1.mp3";
-            audio.play().catch(e => console.log("Audio play blocked"));
+            audio.src = localStorage.getItem('selectedReciterUrl') || "https://www.islamcan.com/audio/adhan/azan1.mp3";
+            audio.play().catch(e => console.log("Play error:", e));
         }
     });
 
-    if (next) {
+    if (next && document.getElementById('timerDisplay')) {
         let mLeft = Math.floor(minDiff / 60);
         document.getElementById('timerDisplay').innerText = `بۆ بانگی ${next} ${mLeft} خولەک ماوە`;
     }
