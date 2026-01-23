@@ -118,11 +118,19 @@ if ('serviceWorker' in navigator) {
         reg.onupdatefound = () => {
             const worker = reg.installing;
             worker.onstatechange = () => {
-                if (worker.state === 'installed' && navigator.serviceWorker.controller) document.getElementById('update-toast').classList.add('show');
+                if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                    const toast = document.getElementById('update-toast');
+                    if (toast) toast.classList.add('show');
+                }
             };
         };
     });
 }
+
+// ئەم فەنکشنە زیاد بکە بۆ ئەوەی دوگمەی ناو تێبینییەکە کار بکات
+window.refreshApp = () => {
+    window.location.reload(true);
+};
 
 document.getElementById('citySelect').onchange = (e) => fetchPrayers(e.target.value);
 setInterval(updateClock, 1000);
