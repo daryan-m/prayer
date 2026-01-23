@@ -1,3 +1,12 @@
+self.addEventListener('install', e => {
+  self.skipWaiting(); // وا دەکات وەشانە نوێیەکە چاوەڕێی داخرانی ئەپەکە نەکات
+  e.waitUntil(caches.open(cacheName).then(cache => cache.addAll(assets)));
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(clients.claim()); // یەکسەر کۆنتڕۆڵی لاپەڕەکە دەگرێتە دەست
+});
+
 const cacheName = 'azan-v1.0.0';
 const assets = [
   './',
