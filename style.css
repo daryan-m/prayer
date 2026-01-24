@@ -101,7 +101,18 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 /* Prayer Cards */
 .prayer-grid { width: 92%; max-width: 450px; display: flex; flex-direction: column; gap: 6px; }
 .prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 20px; border-radius: 12px; border-right: 6px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.4); transition: 0.2s; }
-.prayer-row.inactive { border-right-color: #475569; opacity: 0.6; }
+/* باری ناچالاک */
+.prayer-row.inactive {
+    /* گۆڕینی ڕەنگی هێڵە سەوزەکە بۆ خۆڵەمێشییەکی گونجاو */
+    border-right-color: #475569 !important; 
+    
+    /* کاڵکردنەوەی هەموو لاکێشەکە بۆ ئەوەی دیار بێت کە بێدەنگە */
+    opacity: 0.4 !important; 
+    
+    /* ئەگەر دەتەوێت کەمێک تاریکتر بێت لە باری ئاسایی */
+    background: rgba(15, 23, 42, 0.5) !important; 
+}
+
 .p-time { color: var(--cyan); font-weight: bold; font-size: 1.3rem; direction: ltr; font-variant-numeric: tabular-nums; }
 
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
