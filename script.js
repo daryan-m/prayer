@@ -1,15 +1,104 @@
-ئەم کۆدە (Hash) کە ناردووتە، ناسێنەری تایبەتی ئەو گۆڕانکارییە (Commit) کە دەتەوێت بیگەڕێنیتەوە. لە گیتهەب، ئەمە وەک "کۆدی ناسنامەی" ئەو کاتەیە کە پڕۆژەکە تێیدا ڕێک بووە.
-بۆ ئەوەی پڕۆژەکەت بە تەواوی بگەڕێتەوە سەر ئەو کۆدە، ئەم ڕێگەیە لە هەمووی خێراترە:
-هەنگاوی گەڕاندنەوە لەڕێی کۆدەکەوە:
- * لە گیتهەب بچۆ ناو پڕۆژەکەت (Repository).
- * لە ناو ناونیشانی وێبگەرەکەت (Browser) لە سەرەوە، ئەمە لە کۆتایی لینکەکە زیاد بکە: /commit/Add259e7d6b94bb6b0be453f0c0debaeead36860
-   * نموونە: github.com/username/project/commit/Add259...
- * ئێستا ئەو لاپەڕەیەت بۆ دەبێتەوە کە تەنها ئەو گۆڕانکارییەی تێدایە.
- * لەوێ لیستی سێ فایلەکە (index.html, style.css, script.js) دەبینیت.
- * لە تەنیشت هەر فایلێکدا سێ خاڵەکە (...) دابگرە و View file هەڵبژێرە.
- * کە فایلەکە کرایەوە، کۆدەکە کۆپی بکە و بیبەرەوە ناو فایلە ئەسڵییەکەت.
-ئایا دەتەوێت من یارمەتیت بدەم؟
-ئەگەر دەتوانیت تەنها ناوەرۆکی ئەو سێ فایلە (یان تەنها دانەیەکیان) لێرە بۆ من بنێریت (Paste بکەیت)، من ڕاستەوخۆ ئەو گۆڕانکارییانەی لەسەر جێبەجێ دەکەم کە لە کۆتا نامەدا داوات کردبوو (وەک کاتژمێری جێگیر، ئایکۆنی یوتوبی سوور، و هێنانی X بۆ لای چەپ) بێ ئەوەی دیزاینەکە تێک بچێت.
-کامیان پێت باشە؟
- * خۆت یەک بە یەک کۆدی فایلەکان لە History کۆپی دەکەیتەوە؟
- * یان کۆدی فایلەکان لێرە دادەنێیت تا من بۆت ڕێکبخەمەوە؟
+Const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
+
+let prayers = {};
+let isPlaying = false;
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+}
+
+function handleAdhan(btn, url) {
+    const audio = document.getElementById('adhanAudio');
+    if (isPlaying && audio.src === url) {
+        audio.pause();
+        btn.classList.replace('fa-stop-circle', 'fa-play-circle');
+        isPlaying = false;
+    } else {
+        document.querySelectorAll('.play-btn').forEach(b => b.classList.replace('fa-stop-circle', 'fa-play-circle'));
+        audio.src = url;
+        audio.play();
+        btn.classList.replace('fa-play-circle', 'fa-stop-circle');
+        isPlaying = true;
+    }
+    audio.onended = () => {
+        btn.classList.replace('fa-stop-circle', 'fa-play-circle');
+        isPlaying = false;
+    };
+}
+
+function formatKu(timeStr) {
+    let [h, m] = timeStr.split(':').map(Number);
+    let sfx = h >= 12 ? "د.ن" : "پ.ن";
+    let h12 = h % 12 || 12;
+    // Space between numbers and colon for consistency
+    return `${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}   ${sfx}`;
+}
+
+async function fetchTimes(city) {
+    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
+    const data = await res.json();
+    const t = data.data.timings;
+
+    const adjust = (tm, mins) => {
+        let [h, m] = tm.split(':').map(Number);
+        let d = new Date(); d.setHours(h, m + mins);
+        return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+    };
+
+    prayers = {
+        "بەیانی": adjust(t.Fajr, 6),
+        "خۆرهەڵاتن": "07:02",
+        "نیوەڕۆ": adjust(t.Dhuhr, 6),
+        "عەسر": adjust(t.Asr, 2),
+        "ئێوارە": adjust(t.Maghrib, 8),
+        "خەوتنان": adjust(t.Isha, 2)
+    };
+
+    document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
+    document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
+    document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
+    
+    render();
+}
+
+function render() {
+    const list = document.getElementById('prayerList');
+    list.innerHTML = "";
+    Object.entries(prayers).forEach(([name, time]) => {
+        list.innerHTML += `
+            <div class="prayer-row">
+                <div class="p-name"><i class="fas fa-volume-mute" style="opacity:0.3"></i>&nbsp;&nbsp;<span>${name}</span></div>
+                <div class="p-time">${formatKu(time)}</div>
+            </div>`;
+    });
+}
+
+function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    let sfx = h >= 12 ? "د.ن" : "پ.ن";
+    let h12 = h % 12 || 12;
+    // Using spaces around colons as requested
+    document.getElementById('liveClock').innerHTML = `${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))} <span class="suffix">${sfx}</span>`;
+    
+    if(Object.keys(prayers).length > 0) {
+        let minDiff = Infinity, next = "";
+        Object.entries(prayers).forEach(([n, t]) => {
+            if(n === "خۆرهەڵاتن") return;
+            const [ph, pm] = t.split(':').map(Number);
+            const pDate = new Date(); pDate.setHours(ph, pm, 0);
+            let diff = pDate - now; if(diff < 0) diff += 86400000;
+            if(diff < minDiff) { minDiff = diff; next = n; }
+        });
+        const s = Math.floor(minDiff / 1000);
+        const hours = toKu(Math.floor(s/3600));
+        const minutes = toKu(Math.floor((s%3600)/60));
+        const seconds = toKu(s%60);
+        document.getElementById('countdown').innerText = `ماوە بۆ بانگی ${next} : ${hours} : ${minutes} : ${seconds}`;
+    }
+}
+
+setInterval(updateClock, 1000);
+fetchTimes('Penjwin');
