@@ -2,14 +2,14 @@ const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','
 const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
 
 let prayers = {};
-let activePrayers = JSON.parse(localStorage.getItem('activePrayers')) || ["بەیانی", "نیوەڕۆ", "عەسر", "ئێوارە", "خەوتنان"];
+// لێرەدا دەستکاریم کرد بۆ ئەوەی لە سەرەتادا لیستەکە بەتاڵ بێت (هیچ بانگێک ئەکتیڤ نەبێت)
+let activePrayers = JSON.parse(localStorage.getItem('activePrayers')) || [];
 
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
 }
 
-// چاککردنی سیستەمی ئەکتیڤکردنی بانگەکان
 function toggleActive(name) {
     if (activePrayers.includes(name)) {
         activePrayers = activePrayers.filter(p => p !== name);
@@ -33,12 +33,13 @@ function handleAdhan(btn, url) {
     }
 }
 
-// ڕێکخستنی کاتژمێرەکان بۆ ئەوەی لە چەپەوە دەست پێ بکەن و نەجوڵێن
+// چاککردنی شێوازی کات و پ.ن/د.ن
 function formatKu(timeStr) {
     let [h, m] = timeStr.split(':').map(Number);
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    return `<span style="direction: ltr; display: inline-block;">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}</span> &nbsp;&nbsp; ${sfx}`;
+    // گۆڕینی ڕیزبەندی: سەرەتا پ.ن/د.ن پاشان کاتەکە
+    return `${sfx} &nbsp;&nbsp; <span style="direction: ltr; display: inline-block;">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))} : ٠٠</span>`;
 }
 
 async function fetchTimes(city) {
@@ -90,7 +91,6 @@ function updateClock() {
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
     
-    // کاتژمێر لە چەپەوە و جێگیر
     document.getElementById('liveClock').innerHTML = `
         <span style="direction: ltr; display: inline-block; min-width: 200px; text-align: center;">
             ${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))}
@@ -107,17 +107,22 @@ function updateClock() {
             if(diff < minDiff) { minDiff = diff; next = n; }
         });
         const s = Math.floor(minDiff / 1000);
-        const hours = toKu(Math.floor(s/3600));
-        const minutes = toKu(Math.floor((s%3600)/60));
-        const seconds = toKu(s%60);
+        const hours = toKu(Math.floor(s/3600)).padStart(1, '٠');
+        const minutes = toKu(Math.floor((s%3600)/60)).padStart(2, '٠');
+        const seconds = toKu(s%60).padStart(2, '٠');
         
-        // کاتی ماوە بە ڕەنگی سپی و کاتەکە گەورەتر و ڕەنگی جیاواز
+        // ڕێکخستنی کاتی ماوە بە شێوازی h:m:s
         document.getElementById('countdown').innerHTML = `
             ماوە بۆ بانگی ${next} : 
             <span style="color: #22d3ee; font-size: 1.4rem; direction: ltr; display: inline-block;">
                 ${hours} : ${minutes} : ${seconds}
             </span>`;
     }
+}
+
+function updateCity() {
+    const city = document.getElementById('citySelect').value;
+    fetchTimes(city);
 }
 
 setInterval(updateClock, 1000);
