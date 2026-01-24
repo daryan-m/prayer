@@ -19,8 +19,8 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
-            <h3><i class="fas fa-cog"></i> ڕێکخستنەکان</h3>
-        </div>
+            <h3 class="header-title">ڕێکخستنەکان</h3>
+            <div style="width: 25px;"></div> </div>
         
         <div class="sidebar-content">
             <details class="menu-item">
@@ -53,7 +53,7 @@
                 <summary><i class="fas fa-info-circle"></i> دەربارە</summary>
                 <div class="about-info">
                     <p>گەشەپێدەر: داریان</p>
-                    <p>وەشان: ٢.٤.٠</p>
+                    <p>وەشان: ٢.٥.٠</p>
                 </div>
             </details>
         </div>
@@ -61,7 +61,7 @@
 
     <main class="container">
         <div class="clock-area">
-            <div id="liveClock" class="clock">٠٠:٠٠:٠٠ <span class="suffix">پ.ن</span></div>
+            <div id="liveClock" class="clock">٠٠ : ٠٠ : ٠٠ <span class="suffix">پ.ن</span></div>
         </div>
 
         <div class="date-section">
@@ -75,11 +75,14 @@
 
         <div id="countdown" class="timer-tag big-timer">بارکردن...</div>
 
-        <select id="citySelect" class="city-box lite-dropdown" onchange="updateCity()">
-            <option value="Penjwin">پێنجوێن</option>
-            <option value="Sulaymaniyah">سلێمانی</option>
-            <option value="Erbil">هەولێر</option>
-        </select>
+        <div class="select-wrapper">
+            <select id="citySelect" class="city-box green-dark-dropdown" onchange="updateCity()">
+                <option value="Penjwin">پێنجوێن</option>
+                <option value="Sulaymaniyah">سلێمانی</option>
+                <option value="Erbil">هەولێر</option>
+            </select>
+            <i class="fas fa-chevron-down select-icon"></i>
+        </div>
 
         <div id="prayerList" class="prayer-grid"></div>
     </main>
