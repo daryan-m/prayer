@@ -32,7 +32,7 @@ function formatKu(timeStr) {
     let [h, m] = timeStr.split(':').map(Number);
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    return `${toKu(h12)}:${toKu(m.toString().padStart(2,'0'))}  ${sfx}`;
+    return `${toKu(h12)}:${toKu(m.toString().padStart(2,'0'))}   ${sfx}`; // Added extra spaces before suffix
 }
 
 async function fetchTimes(city) {
@@ -68,7 +68,7 @@ function render() {
     Object.entries(prayers).forEach(([name, time]) => {
         list.innerHTML += `
             <div class="prayer-row">
-                <div class="p-name"><i class="fas fa-volume-mute"></i> <span>${name}</span></div>
+                <div class="p-name"><i class="fas fa-volume-mute" style="opacity:0.3"></i>&nbsp;&nbsp;<span>${name}</span></div>
                 <div class="p-time">${formatKu(time)}</div>
             </div>`;
     });
@@ -79,7 +79,7 @@ function updateClock() {
     let h = now.getHours();
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    document.getElementById('liveClock').innerHTML = `${toKu(h12)}:${toKu(now.getMinutes().toString().padStart(2,'0'))}:${toKu(now.getSeconds().toString().padStart(2,'0'))} <span class="suffix">${sfx}</span>`;
+    document.getElementById('liveClock').innerHTML = `${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))} <span class="suffix">${sfx}</span>`;
     
     if(Object.keys(prayers).length > 0) {
         let minDiff = Infinity, next = "";
@@ -91,7 +91,10 @@ function updateClock() {
             if(diff < minDiff) { minDiff = diff; next = n; }
         });
         const s = Math.floor(minDiff / 1000);
-        document.getElementById('countdown').innerText = toKu(`ماوە بۆ بانگی ${next}: ${Math.floor(s/3600)}:${Math.floor((s%3600)/60)}:${s%60}`);
+        const hours = toKu(Math.floor(s/3600));
+        const minutes = toKu(Math.floor((s%3600)/60));
+        const seconds = toKu(s%60);
+        document.getElementById('countdown').innerText = `ماوە بۆ بانگی ${next} : ${hours} : ${minutes} : ${seconds}`;
     }
 }
 
