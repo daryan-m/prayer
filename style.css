@@ -62,17 +62,19 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .select-wrapper { position: relative; width: 92%; max-width: 450px; margin-bottom: 5px; }
 /* ئەوەی پێشتر هەبوو وەک خۆی بمێنێتەوە، تەنها ئەم بەشە نوێ بکەرەوە */
 
+/* بۆ ئەوەی لیستەکە ڕەنگی تاریک بێت نەک خۆڵەمێشی */
 .green-dark-dropdown option { 
-    background: #0f173a !important; /* ڕەنگی تاریکی شیک لەبری خۆڵەمێشی */
+    background: #0f172a !important; 
     color: white !important; 
 }
 
-/* بۆ دڵنیابوون لەوەی پ.ن و د.ن دەچنە ئەودیو */
+/* ڕێکخستنی کاتەکانی ناو لیستەکە بۆ ئەوەی پ.ن بڕواتە چەپ */
 .p-time {
-    display: flex;
-    flex-direction: row-reverse;
-    gap: 10px;
+    display: flex !important;
+    flex-direction: row !important; /* پ.ن لە چەپ و کات لای ڕاست */
+    gap: 8px;
     align-items: center;
+    justify-content: flex-end;
 }
 
 .select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--green); pointer-events: none; }
