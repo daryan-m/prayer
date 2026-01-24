@@ -21,11 +21,11 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 
 .header-title {
     margin: 0;
-    padding-right: 10px; /* مەودایەکی کەم بۆ نوسینەکە لە لای ڕاستەوە */
+    padding-right: 5px; /* مەودایەکی کەم بۆ نوسینەکە لە لای ڕاستەوە */
 }
 
 .close-btn {
-    padding-left: 10px; /* مەودایەکی کەم بۆ X لە لای چەپەوە */
+    padding-left: 5px; /* مەودایەکی کەم بۆ X لە لای چەپەوە */
 }
 
 /* YouTube Icon Color */
