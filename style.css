@@ -14,7 +14,7 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
     justify-content: space-between; /* بۆ ئەوەی نوسین و X لێک دوور بکەونەوە */
     align-items: center;          /* بۆ ئەوەی لە ڕووی ستونییەوە لە یەک ئاست بن */
     flex-direction: row-reverse;  /* ئەمە نوسینەکە دەباتە ڕاست و X دەباتە چەپ */
-    padding: 10px 15px;           /* کەمێک مەودا لە لای ڕاست و چەپ جێ دەهێڵێت */
+    padding: 5px 5px;           /* کەمێک مەودا لە لای ڕاست و چەپ جێ دەهێڵێت */
     border-bottom: 1px solid #1e293b;
 }
 
