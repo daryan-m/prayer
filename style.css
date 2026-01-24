@@ -1,48 +1,134 @@
-:root { --bg: #020617; --card: #0f172a; --cyan: #22d3ee; --green: #10b981; --white: #ffffff; }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-body { background: var(--bg); color: var(--white); direction: rtl; overflow: hidden; font-size: 1.1rem; }
+دەستت خۆش، ئەمە کۆدە بنچینەییەکەیە (Script) کە دیزاینەکەی ڕێک بوو. ئێستا بە وردی ئەو گۆڕانکارییانەم تێدا جێگیر کرد کە داوات کردبوو، بەبێ ئەوەی دەستکاری پێکهاتە و دیزاینە ئەسڵییەکە بکەم.
+تەنها ئەم کۆدەی خوارەوە کۆپی بکە و بیخە جێگەی کۆدە کۆنەکەت لە فایلی script.js:
+const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
 
-/* Navbar */
-.navbar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 15px; background: rgba(15, 23, 42, 0.95); z-index: 1000; border-bottom: 1px solid var(--cyan); }
-.logo b { color: var(--cyan); font-size: 1.2rem; display: flex; align-items: center; }
+let prayers = {};
+let activePrayers = JSON.parse(localStorage.getItem('activePrayers')) || ["بەیانی", "نیوەڕۆ", "عەسر", "ئێوارە", "خەوتنان"];
 
-/* Sidebar Header Adjustments */
-.sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--cyan); }
-.sidebar.active { right: 0; }
-.sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px; }
-.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); }
-.close-btn { color: #f43f5e; font-size: 1.8rem; cursor: pointer; }
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+}
 
-/* YouTube Sidebar Style */
-.youtube-link-custom { text-decoration: none; display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #1e293b; }
-.yt-red { color: #ff0000; font-size: 1.5rem; margin-left: 10px; }
-.yt-text { color: white; font-weight: bold; }
+// چاککردنی سیستەمی ئەکتیڤکردنی بانگەکان
+function toggleActive(name) {
+    if (activePrayers.includes(name)) {
+        activePrayers = activePrayers.filter(p => p !== name);
+    } else {
+        activePrayers.push(name);
+    }
+    localStorage.setItem('activePrayers', JSON.stringify(activePrayers));
+    render();
+}
 
-/* Main Layout */
-.container { padding-top: 55px; display: flex; flex-direction: column; align-items: center; height: 100vh; gap: 8px; }
-.clock { font-size: 2.6rem; font-weight: bold; margin-top: 15px; display: flex; justify-content: center; direction: ltr; min-width: 320px; }
-.clock .suffix { font-size: 1.4rem; color: var(--cyan); margin-left: 15px; }
+function handleAdhan(btn, url) {
+    const audio = document.getElementById('adhanAudio');
+    if (!audio.paused && audio.src === url) {
+        audio.pause();
+        btn.classList.replace('fa-stop-circle', 'fa-play-circle');
+    } else {
+        document.querySelectorAll('.play-btn').forEach(b => b.classList.replace('fa-stop-circle', 'fa-play-circle'));
+        audio.src = url;
+        audio.play();
+        btn.classList.replace('fa-play-circle', 'fa-stop-circle');
+    }
+}
 
-.primary-date.centered { text-align: center; width: 100%; color: var(--green); font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
-.secondary-dates { font-size: 0.95rem; display: flex; gap: 12px; align-items: center; }
-.v-line { width: 1.5px; height: 16px; background: var(--cyan); opacity: 0.6; }
+// ڕێکخستنی کاتژمێرەکان بۆ ئەوەی لە چەپەوە دەست پێ بکەن و نەجوڵێن
+function formatKu(timeStr) {
+    let [h, m] = timeStr.split(':').map(Number);
+    let sfx = h >= 12 ? "د.ن" : "پ.ن";
+    let h12 = h % 12 || 12;
+    return `<span style="direction: ltr; display: inline-block;">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}</span> &nbsp;&nbsp; ${sfx}`;
+}
 
-/* Countdown - White Text & Cyan Time */
-.timer-tag.big-timer { min-width: 330px; font-size: 1.2rem; color: #ffffff; font-weight: bold; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 1px solid var(--cyan); text-align: center; }
-.time-val { color: var(--cyan); font-size: 1.35rem; direction: ltr; display: inline-block; }
+async function fetchTimes(city) {
+    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
+    const data = await res.json();
+    const t = data.data.timings;
 
-/* City Selector - Green Dark Lite */
-.select-wrapper { position: relative; width: 92%; max-width: 450px; margin-bottom: 5px; }
-.green-dark-dropdown { width: 100%; padding: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.5); color: white; border-radius: 12px; font-size: 1.25rem; text-align: center; appearance: none; }
-.green-dark-dropdown option { background: #0f172a; color: white; }
-.select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--green); pointer-events: none; }
+    const adjust = (tm, mins) => {
+        let [h, m] = tm.split(':').map(Number);
+        let d = new Date(); d.setHours(h, m + mins);
+        return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+    };
 
-/* Prayer Grid & Active Toggle */
-.prayer-grid { width: 92%; max-width: 450px; display: flex; flex-direction: column; gap: 5px; }
-.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 20px; border-radius: 12px; border-right: 6px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.4); cursor: pointer; }
-.prayer-row.deactive { border-right-color: #334155; opacity: 0.6; }
-.p-name { display: flex; align-items: center; gap: 12px; }
-.p-time { color: var(--cyan); font-weight: bold; font-size: 1.3rem; direction: ltr; }
+    prayers = {
+        "بەیانی": adjust(t.Fajr, 6),
+        "خۆرهەڵاتن": "07:02",
+        "نیوەڕۆ": adjust(t.Dhuhr, 6),
+        "عەسر": adjust(t.Asr, 2),
+        "ئێوارە": adjust(t.Maghrib, 8),
+        "خەوتنان": adjust(t.Isha, 2)
+    };
 
-.sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
-.sidebar-overlay.active { display: block; }
+    document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
+    document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
+    document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
+    
+    render();
+}
+
+function render() {
+    const list = document.getElementById('prayerList');
+    list.innerHTML = "";
+    Object.entries(prayers).forEach(([name, time]) => {
+        const isActive = activePrayers.includes(name);
+        list.innerHTML += `
+            <div class="prayer-row ${isActive ? '' : 'inactive'}" onclick="toggleActive('${name}')" style="cursor:pointer; opacity: ${isActive ? '1' : '0.5'}">
+                <div class="p-name">
+                    <i class="fas ${isActive ? 'fa-volume-up' : 'fa-volume-mute'}" style="color: ${isActive ? '#10b981' : '#64748b'}"></i>
+                    &nbsp;&nbsp;<span>${name}</span>
+                </div>
+                <div class="p-time">${formatKu(time)}</div>
+            </div>`;
+    });
+}
+
+function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    let sfx = h >= 12 ? "د.ن" : "پ.ن";
+    let h12 = h % 12 || 12;
+    
+    // کاتژمێر لە چەپەوە و جێگیر
+    document.getElementById('liveClock').innerHTML = `
+        <span style="direction: ltr; display: inline-block; min-width: 200px; text-align: center;">
+            ${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))}
+        </span> 
+        <span class="suffix">${sfx}</span>`;
+    
+    if(Object.keys(prayers).length > 0) {
+        let minDiff = Infinity, next = "";
+        Object.entries(prayers).forEach(([n, t]) => {
+            if(n === "خۆرهەڵاتن") return;
+            const [ph, pm] = t.split(':').map(Number);
+            const pDate = new Date(); pDate.setHours(ph, pm, 0);
+            let diff = pDate - now; if(diff < 0) diff += 86400000;
+            if(diff < minDiff) { minDiff = diff; next = n; }
+        });
+        const s = Math.floor(minDiff / 1000);
+        const hours = toKu(Math.floor(s/3600));
+        const minutes = toKu(Math.floor((s%3600)/60));
+        const seconds = toKu(s%60);
+        
+        // کاتی ماوە بە ڕەنگی سپی و کاتەکە گەورەتر و ڕەنگی جیاواز
+        document.getElementById('countdown').innerHTML = `
+            ماوە بۆ بانگی ${next} : 
+            <span style="color: #22d3ee; font-size: 1.4rem; direction: ltr; display: inline-block;">
+                ${hours} : ${minutes} : ${seconds}
+            </span>`;
+    }
+}
+
+setInterval(updateClock, 1000);
+fetchTimes('Penjwin');
+
+گۆڕانکارییەکان بە کورتی:
+ * کاتژمێرەکان: هەم کاتژمێری سەرەکی و هەم کاتی ماوە و کاتەکانی بانگ، ئێستا لە چەپەوە بۆ ڕاستن (H:M:S) و بەهۆی بەکارهێنانی inline-block و min-width جوڵەی تێدا نەماوە.
+ * ئەکتیڤکردن: ئێستا بە کلیک کردن لەسەر هەر بانگێک، ئایکۆنی موکەبەرەکە دەگۆڕێت و دەتوانیت "ئەکتیڤ" یان "بێدەنگی" بکەیت.
+ * کاتی ماوە: نوسینەکە سپییە و تەنها ژمارەکان ڕەنگیان گۆڕاوە بۆ ئاوی (Cyan) و یەک پلە گەورەتر کراون.
+ * زیرەکی ئەپەکە: سیستەمی پاشەکەوتکردنی باری بانگەکانم بۆ داناوە (localStorage) بۆ ئەوەی ئەگەر پەیجەکە ڕیفڕێش بکەیتەوە، بانگەکان وەک خۆیان بمێننەوە.
+یادخستنەوە: بۆ ئەوەی ئایکۆنی یوتوب و گۆڕینی لای X لە ڕێکخستنەکان کار بکات، پێویستە لە style.css ئەو چەند هێڵە کەمەی لە نامەی پێشوو بۆم ناردبووی زیاد بکەیت.
+ئایا ئێستا کاتژمێرەکان وەک ئەوەیان لێهات کە مەبەستت بوو؟
