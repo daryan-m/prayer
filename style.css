@@ -27,7 +27,7 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
     color: var(--cyan) !important; 
     font-size: 1.3rem !important;
     font-weight: bold !important;
-    order: 2 !important;
+    order: 1 !important;
 }
 
 .close-btn {
@@ -35,7 +35,7 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
     color: #ff0000 !important; 
     font-size: 1.8rem !important;
     cursor: pointer !important;
-    order: 1 !important;
+    order: 2 !important;
 }
 
 
