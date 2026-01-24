@@ -1,102 +1,48 @@
-const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
-const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
+:root { --bg: #020617; --card: #0f172a; --cyan: #22d3ee; --green: #10b981; --white: #ffffff; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+body { background: var(--bg); color: var(--white); direction: rtl; overflow: hidden; font-size: 1.1rem; }
 
-let prayers = {};
-let mutedPrayers = JSON.parse(localStorage.getItem('muted')) || [];
+/* Navbar */
+.navbar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 15px; background: rgba(15, 23, 42, 0.95); z-index: 1000; border-bottom: 1px solid var(--cyan); }
+.logo b { color: var(--cyan); font-size: 1.2rem; display: flex; align-items: center; }
 
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
-    document.getElementById('overlay').classList.toggle('active');
-}
+/* Sidebar Header Adjustments */
+.sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--cyan); }
+.sidebar.active { right: 0; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px; }
+.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); }
+.close-btn { color: #f43f5e; font-size: 1.8rem; cursor: pointer; }
 
-// Toggle Mute for each prayer
-function toggleMute(name) {
-    if (mutedPrayers.includes(name)) {
-        mutedPrayers = mutedPrayers.filter(p => p !== name);
-    } else {
-        mutedPrayers.push(name);
-    }
-    localStorage.setItem('muted', JSON.stringify(mutedPrayers));
-    render();
-}
+/* YouTube Sidebar Style */
+.youtube-link-custom { text-decoration: none; display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #1e293b; }
+.yt-red { color: #ff0000; font-size: 1.5rem; margin-left: 10px; }
+.yt-text { color: white; font-weight: bold; }
 
-function formatKuTime(timeStr) {
-    let [h, m] = timeStr.split(':').map(Number);
-    let sfx = h >= 12 ? "د.ن" : "پ.ن";
-    let h12 = h % 12 || 12;
-    // LTR for numbers: H : M
-    return `<span class="ltr-dir">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}</span> <span style="margin-right:10px">${sfx}</span>`;
-}
+/* Main Layout */
+.container { padding-top: 55px; display: flex; flex-direction: column; align-items: center; height: 100vh; gap: 8px; }
+.clock { font-size: 2.6rem; font-weight: bold; margin-top: 15px; display: flex; justify-content: center; direction: ltr; min-width: 320px; }
+.clock .suffix { font-size: 1.4rem; color: var(--cyan); margin-left: 15px; }
 
-async function fetchTimes(city) {
-    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
-    const data = await res.json();
-    const t = data.data.timings;
-    const adjust = (tm, mins) => {
-        let [h, m] = tm.split(':').map(Number);
-        let d = new Date(); d.setHours(h, m + mins);
-        return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
-    };
-    prayers = { "بەیانی": adjust(t.Fajr, 6), "خۆرهەڵاتن": "07:02", "نیوەڕۆ": adjust(t.Dhuhr, 6), "عەسر": adjust(t.Asr, 2), "ئێوارە": adjust(t.Maghrib, 8), "خەوتنان": adjust(t.Isha, 2) };
-    document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
-    document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
-    document.getElementById('kurdishDate').innerText = toKu("کوردی : ٥ ـی ڕێبەندانی ٢٧٢٥");
-    render();
-}
+.primary-date.centered { text-align: center; width: 100%; color: var(--green); font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
+.secondary-dates { font-size: 0.95rem; display: flex; gap: 12px; align-items: center; }
+.v-line { width: 1.5px; height: 16px; background: var(--cyan); opacity: 0.6; }
 
-function render() {
-    const list = document.getElementById('prayerList');
-    list.innerHTML = "";
-    Object.entries(prayers).forEach(([name, time]) => {
-        const isMuted = mutedPrayers.includes(name);
-        list.innerHTML += `
-            <div class="prayer-row ${isMuted ? 'muted' : ''}" onclick="toggleMute('${name}')">
-                <div class="p-name">
-                    <i class="fas ${isMuted ? 'fa-volume-mute' : 'fa-volume-up'} vol-icon"></i>
-                    <span>${name}</span>
-                </div>
-                <div class="p-time">${formatKuTime(time)}</div>
-            </div>`;
-    });
-}
+/* Countdown - White Text & Cyan Time */
+.timer-tag.big-timer { min-width: 330px; font-size: 1.2rem; color: #ffffff; font-weight: bold; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 1px solid var(--cyan); text-align: center; }
+.time-val { color: var(--cyan); font-size: 1.35rem; direction: ltr; display: inline-block; }
 
-function updateClock() {
-    const now = new Date();
-    let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-    let sfx = h >= 12 ? "د.ن" : "پ.ن";
-    let h12 = h % 12 || 12;
-    
-    // Fixed clock to prevent jumping
-    document.getElementById('liveClock').innerHTML = `
-        <span class="ltr-dir" style="width:180px; justify-content:center;">
-            ${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))} : ${toKu(s.toString().padStart(2,'0'))}
-        </span>
-        <span class="suffix">${sfx}</span>`;
-    
-    if(Object.keys(prayers).length > 0) {
-        let minDiff = Infinity, next = "";
-        Object.entries(prayers).forEach(([n, t]) => {
-            if(n === "خۆرهەڵاتن") return;
-            const [ph, pm] = t.split(':').map(Number);
-            const pDate = new Date(); pDate.setHours(ph, pm, 0);
-            let diff = pDate - now; if(diff < 0) diff += 86400000;
-            if(diff < minDiff) { minDiff = diff; next = n; }
-        });
-        const sec = Math.floor(minDiff / 1000);
-        const hh = Math.floor(sec/3600), mm = Math.floor((sec%3600)/60), ss = sec%60;
-        document.getElementById('countdown').innerHTML = `
-            ماوە بۆ بانگی ${next} : 
-            <span class="time-highlight ltr-dir">
-                ${toKu(hh)} : ${toKu(mm.toString().padStart(2,'0'))} : ${toKu(ss.toString().padStart(2,'0'))}
-            </span>`;
-    }
-}
+/* City Selector - Green Dark Lite */
+.select-wrapper { position: relative; width: 92%; max-width: 450px; margin-bottom: 5px; }
+.green-dark-dropdown { width: 100%; padding: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.5); color: white; border-radius: 12px; font-size: 1.25rem; text-align: center; appearance: none; }
+.green-dark-dropdown option { background: #0f172a; color: white; }
+.select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--green); pointer-events: none; }
 
-function handlePreview(btn, url) {
-    const audio = document.getElementById('adhanAudio');
-    if (!audio.paused && audio.src === url) { audio.pause(); btn.classList.replace('fa-stop-circle', 'fa-play-circle'); }
-    else { audio.src = url; audio.play(); btn.classList.replace('fa-play-circle', 'fa-stop-circle'); }
-}
+/* Prayer Grid & Active Toggle */
+.prayer-grid { width: 92%; max-width: 450px; display: flex; flex-direction: column; gap: 5px; }
+.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 20px; border-radius: 12px; border-right: 6px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.4); cursor: pointer; }
+.prayer-row.deactive { border-right-color: #334155; opacity: 0.6; }
+.p-name { display: flex; align-items: center; gap: 12px; }
+.p-time { color: var(--cyan); font-weight: bold; font-size: 1.3rem; direction: ltr; }
 
-setInterval(updateClock, 1000);
-fetchTimes('Penjwin');
+.sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
+.sidebar-overlay.active { display: block; }
