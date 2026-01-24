@@ -2,7 +2,7 @@ const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','
 const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
 
 let prayers = {};
-// لێرەدا دەستکاریم کرد بۆ ئەوەی لە سەرەتادا لیستەکە بەتاڵ بێت (هیچ بانگێک ئەکتیڤ نەبێت)
+// لە سەرەتادا هیچ بانگێک ئەکتیڤ نییە
 let activePrayers = JSON.parse(localStorage.getItem('activePrayers')) || [];
 
 function toggleSidebar() {
@@ -33,13 +33,12 @@ function handleAdhan(btn, url) {
     }
 }
 
-// چاککردنی شێوازی کات و پ.ن/د.ن
+// کاتی بانگەکان: پ.ن لە چەپ، کات لە ڕاست (بێ چرکە)
 function formatKu(timeStr) {
     let [h, m] = timeStr.split(':').map(Number);
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    // گۆڕینی ڕیزبەندی: سەرەتا پ.ن/د.ن پاشان کاتەکە
-    return `${sfx} &nbsp;&nbsp; <span style="direction: ltr; display: inline-block;">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))} : ٠٠</span>`;
+    return `<span class="sfx-tag">${sfx}</span> &nbsp; <span style="direction: ltr; display: inline-block;">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}</span>`;
 }
 
 async function fetchTimes(city) {
@@ -91,6 +90,7 @@ function updateClock() {
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
     
+    // کاتژمێری سەرەکی: h:m:s لە چەپەوە
     document.getElementById('liveClock').innerHTML = `
         <span style="direction: ltr; display: inline-block; min-width: 200px; text-align: center;">
             ${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))}
@@ -107,11 +107,11 @@ function updateClock() {
             if(diff < minDiff) { minDiff = diff; next = n; }
         });
         const s = Math.floor(minDiff / 1000);
-        const hours = toKu(Math.floor(s/3600)).padStart(1, '٠');
+        const hours = toKu(Math.floor(s/3600));
         const minutes = toKu(Math.floor((s%3600)/60)).padStart(2, '٠');
         const seconds = toKu(s%60).padStart(2, '٠');
         
-        // ڕێکخستنی کاتی ماوە بە شێوازی h:m:s
+        // کاتی ماوە: h:m:s لە چەپەوە
         document.getElementById('countdown').innerHTML = `
             ماوە بۆ بانگی ${next} : 
             <span style="color: #22d3ee; font-size: 1.4rem; direction: ltr; display: inline-block;">
