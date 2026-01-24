@@ -7,38 +7,41 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .logo b { color: var(--cyan); font-size: 1.1rem; display: flex; align-items: center; }
 .menu-icon { color: var(--cyan); font-size: 1.3rem; cursor: pointer; }
 
-/* Sidebar */
+/* Sidebar - Sidebar header aligned as requested */
 .sidebar { position: fixed; top: 0; right: -100%; width: 260px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 15px; border-left: 1px solid var(--cyan); }
 .sidebar.active { right: 0; }
-.sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 10px; margin-bottom: 15px; }
+.sidebar-header { display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 10px; margin-bottom: 15px; }
+.sidebar-header h3 { font-size: 1.1rem; }
 .close-btn { color: #f43f5e; font-size: 1.4rem; cursor: pointer; }
 
 .menu-item summary { list-style: none; padding: 12px 0; border-bottom: 1px solid #1e293b; cursor: pointer; font-weight: bold; }
 .adhan-options { background: #1e293b; border-radius: 8px; margin: 5px 0; padding: 5px; }
 .adhan-choice { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #334155; align-items: center; }
-.play-btn { color: var(--green); cursor: pointer; }
+.play-btn { color: var(--green); cursor: pointer; font-size: 1.4rem; }
 .youtube-white { color: var(--white) !important; text-decoration: none; display: block; padding: 12px 0; border-bottom: 1px solid #1e293b; }
 .youtube-white i { color: var(--white); margin-left: 8px; }
-.about-info { padding: 10px; font-size: 0.85rem; color: #94a3b8; }
 
 /* Layout Adjustments */
-.container { padding-top: 50px; display: flex; flex-direction: column; align-items: center; height: 100vh; }
-.clock { font-size: 2.3rem; font-weight: bold; margin-top: 2px; }
-.clock .suffix { font-size: 1.1rem; color: var(--cyan); margin-right: 12px; }
+.container { padding-top: 45px; display: flex; flex-direction: column; align-items: center; height: 100vh; }
+.clock { font-size: 2.3rem; font-weight: bold; margin-top: 5px; }
+.clock .suffix { font-size: 1.2rem; color: var(--cyan); margin-right: 12px; }
 
-.primary-date { color: var(--green); font-weight: bold; font-size: 1rem; margin-top: 2px; }
-.secondary-dates { font-size: 0.8rem; display: flex; gap: 10px; margin-top: 2px; }
+.primary-date.centered { text-align: center; width: 100%; color: var(--green); font-weight: bold; font-size: 1.1rem; margin-top: 5px; }
+.secondary-dates { font-size: 0.85rem; display: flex; gap: 10px; margin-top: 4px; }
 .v-line { width: 1px; height: 12px; background: var(--cyan); opacity: 0.4; }
 
-.timer-tag { color: var(--cyan); font-weight: bold; font-size: 0.85rem; margin: 4px 0; padding: 3px 12px; background: rgba(34, 211, 238, 0.1); border-radius: 15px; border: 1px solid rgba(34, 211, 238, 0.3); }
+/* Fixed Timer Tag - Extra wide to avoid shifting */
+.timer-tag.long-tag { min-width: 280px; text-align: center; color: var(--cyan); font-weight: bold; font-size: 0.9rem; margin: 8px 0; padding: 6px 20px; background: rgba(34, 211, 238, 0.1); border-radius: 20px; border: 1px solid rgba(34, 211, 238, 0.4); }
 
-/* City Select Box - Thinner */
-.city-box { width: 92%; max-width: 400px; padding: 8px; background: #1e293b; border: 1px solid var(--green); color: white; border-radius: 8px; margin-bottom: 8px; font-size: 1rem; text-align: center; }
+/* City Dropdown - Fixed Purple Background issue */
+.modern-dropdown { width: 92%; max-width: 450px; padding: 8px; background: #1e293b; border: 1px solid var(--green); color: white; border-radius: 8px; margin-bottom: 10px; font-size: 1.1rem; text-align: center; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 15px center; }
+.modern-dropdown option { background: #0f172a; color: white; }
 
-/* Prayer Cards - Thinner */
+/* Prayer Cards with Bottom Border and Side Border */
 .prayer-grid { width: 92%; max-width: 450px; }
-.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 8px 15px; margin-bottom: 5px; border-radius: 8px; border-right: 4px solid var(--green); }
-.p-time { color: var(--cyan); font-weight: bold; font-size: 1.05rem; }
+.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 8px 18px; margin-bottom: 6px; border-radius: 8px; border-right: 5px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.3); }
+.p-name { display: flex; align-items: center; gap: 10px; }
+.p-time { color: var(--cyan); font-weight: bold; font-size: 1.15rem; }
 
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
 .sidebar-overlay.active { display: block; }
