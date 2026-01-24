@@ -10,7 +10,7 @@
 <body>
 
     <div class="navbar">
-        <div style="font-size: 1.1rem;"><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
+        <div><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
         <i class="fas fa-bars" onclick="toggleSidebar()"></i>
     </div>
 
@@ -18,51 +18,46 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3>ڕێکخستن</h3>
             <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
+            <h3>ڕێکخستن</h3>
         </div>
         
-        <div class="sidebar-section">
-            <h4><i class="fas fa-volume-up"></i> هەڵبژاردنی بانگبێژ</h4>
-            <select id="adhanSelect" onchange="previewAdhan()">
-                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مەککە (شێخ عەلی مەلا)</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">مەدینە</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan16.mp3">عبدالباسط عبدالصمد</option>
-            </select>
-            <button class="test-btn" onclick="previewAdhan()"><i class="fas fa-play"></i> تاقیکردنەوە</button>
-        </div>
-
-        <div class="sidebar-item" onclick="alert('گەشەپێدەر: داریان')">
-            <i class="fas fa-info-circle"></i> دەربارە
+        <h4 style="margin-bottom: 10px;">هەڵبژاردنی بانگبێژ:</h4>
+        <div id="adhanList">
+            <div class="adhan-item" onclick="playAdhan('https://www.islamcan.com/audio/adhan/azan1.mp3')">
+                <span>مەککە (عەلی مەلا)</span> <i class="fas fa-play-circle play-icon"></i>
+            </div>
+            <div class="adhan-item" onclick="playAdhan('https://www.islamcan.com/audio/adhan/azan2.mp3')">
+                <span>مەدینە</span> <i class="fas fa-play-circle play-icon"></i>
+            </div>
+            <div class="adhan-item" onclick="playAdhan('https://www.islamcan.com/audio/adhan/azan16.mp3')">
+                <span>عبدالباسط</span> <i class="fas fa-play-circle play-icon"></i>
+            </div>
         </div>
     </div>
 
     <div class="main-content">
         <div class="header-card">
-            <img src="https://i.imgur.com/vH97Nl8.png" class="mosque-top-img" />
+            <img src="https://i.imgur.com/vH97Nl8.png" class="mosque-bg-img" alt="">
             <div class="clock-box">
                 <span class="clock" id="liveClock">00:00:00</span>
-                <span class="ampm" id="ampm">AM</span>
             </div>
             <div class="date-container">
-                <div class="hijri-row" id="hijriDate">...</div>
-                <div class="kurdish-row">
-                    <span id="miladiDate">...</span>
-                    <span class="separator">|</span>
-                    <span id="kurdishDate">...</span>
-                </div>
+                <div id="hijriDate" class="hijri-row">...</div>
+                <div id="kurdishDate" class="kurdish-row">...</div>
+                <div id="miladiDate" style="opacity: 0.7; font-size: 0.8rem;">...</div>
             </div>
         </div>
 
-        <div class="timer" id="timeLeft">...</div>
+        <div id="timeLeft" class="prayer-row" style="background: none; border: 1px solid #334155; justify-content: center; color: #facc15;">...</div>
 
-        <select id="citySelect" onchange="changeCity()">
+        <select id="citySelect" onchange="changeCity()" style="width: 90%; max-width: 400px; padding: 12px; display: block; margin: 10px auto; border-radius: 10px; background: #1e293b; color: white;">
             <option value="Penjwin">پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
         </select>
 
-        <div class="prayer-list" id="prayerList"></div>
+        <div id="prayerList"></div>
     </div>
 
     <audio id="player"></audio>
