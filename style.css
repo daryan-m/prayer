@@ -11,24 +11,32 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .sidebar.active { right: 0; }
 .sidebar-header {
     display: flex;
-    justify-content: space-between; /* پاڵنانی هەردوولا بۆ دوورترین خاڵ */
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 15px 10px; /* کەمێک مەودای ناوەکی */
-    direction: ltr; /* ئەمە X دەخاتە چەپ و نوسینەکە دەخاتە ڕاست */
+    padding: 15px 15px;
+    /* هێڵی جیاکەرەوە بە هەمان ڕەنگی کاتەکانی بانگ (سیان) */
+    border-bottom: 1px solid var(--cyan); 
+    margin-bottom: 20px;
 }
 
 .header-title {
     margin: 0;
-    flex: 0 1 auto; /* ڕێگری دەکات لەوەی نوسینەکە هەموو پاناییەکە داگیر بکات */
-    text-align: right;
-    white-space: nowrap; /* ناهێڵێت نوسینەکە ببێت بە دوو دێڕ */
+    /* ڕەنگی سیان وەک نوسینی کاتەکانی بانگ لە هیدەر */
+    color: var(--cyan); 
+    font-size: 1.2rem;
+    font-weight: bold;
+    order: 2; /* نوسینەکە لە لای ڕاست */
 }
 
 .close-btn {
-    flex: 0 1 auto;
+    /* ڕەنگی سوور بۆ نیشانەی × */
+    color: #ff0000; 
+    font-size: 1.8rem;
     cursor: pointer;
+    order: 1; /* نیشانەی × لە لای چەپ */
 }
+
 
 
 /* YouTube Icon Color */
