@@ -1,30 +1,47 @@
-:root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; }
-body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; direction: rtl; overflow-x: hidden; }
+:root {
+    --bg-color: #020617;
+    --card-bg: #1e293b;
+    --accent: #38bdf8;
+    --text-main: #f8fafc;
+    --gold: #facc15;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
 
 /* Navbar */
-.navbar { display: flex; justify-content: space-between; padding: 15px; background: var(--card); border-bottom: 2px solid var(--accent); }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
+.menu-btn { background: none; border: none; color: var(--accent); font-size: 1.5rem; cursor: pointer; }
 
-/* Sidebar - بە تەواوی شاراوە */
-.sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #111827; z-index: 1000; transition: 0.4s; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+/* Sidebar Logic - کێشەی کشۆکە لێرە چارەسەر کرا */
+.sidebar { position: fixed; top: 0; right: -100%; width: 300px; height: 100%; background: #0f172a; z-index: 1001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 2rem; border-left: 2px solid var(--accent); }
 .sidebar.active { right: 0; }
+.sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; }
+.sidebar-overlay.active { display: block; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
+.close-btn { color: #ef4444; font-size: 1.8rem; cursor: pointer; }
 
-.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.close-btn { cursor: pointer; color: #ff4444; font-size: 1.5rem; }
+/* Hero & Mosque Image */
+.hero-section { position: relative; width: 100%; min-height: 250px; display: flex; align-items: center; justify-content: center; text-align: center; margin-bottom: 1rem; border-radius: 0 0 30px 30px; overflow: hidden; background: linear-gradient(to bottom, #1e293b, #020617); }
+.mosque-overlay { position: absolute; inset: 0; background: url('https://i.imgur.com/vH97Nl8.png') no-repeat center; background-size: contain; opacity: 0.12; z-index: 0; }
+.live-info { position: relative; z-index: 1; }
+#liveClock { font-size: 3.5rem; font-family: monospace; letter-spacing: 2px; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+.date-group p { margin: 5px 0; font-size: 0.9rem; }
+.k-date { color: var(--gold); font-weight: bold; font-size: 1.2rem !important; }
 
-/* Adhan List in Sidebar */
-.adhan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #1e293b; margin-bottom: 8px; border-radius: 8px; cursor: pointer; }
-.play-icon { color: var(--accent); font-size: 1.2rem; }
+/* Countdown */
+.countdown-box { width: 90%; max-width: 500px; margin: 0 auto 1.5rem auto; padding: 12px; background: rgba(56, 189, 248, 0.1); border-radius: 50px; text-align: center; color: var(--gold); font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-/* Mosque Image Header */
-.header-card { position: relative; width: 100%; padding: 40px 0; text-align: center; overflow: hidden; }
-.mosque-bg-img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; opacity: 0.15; z-index: 0; pointer-events: none; }
+/* Prayer Cards - ئاسۆیی و درێژ بە لێواری لایت */
+.prayer-cards-container { display: flex; flex-direction: column; gap: 12px; padding: 0 5% 2rem 5%; width: 100%; max-width: 600px; margin: 0 auto; }
+.prayer-card { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 1.2rem 1.5rem; border-radius: 15px; border-right: 6px solid var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: 0.3s; }
+.prayer-card:hover { transform: scale(1.02); background: #26334a; }
+.p-name { font-weight: bold; font-size: 1.1rem; }
+.p-time { color: var(--accent); font-family: monospace; font-size: 1.3rem; font-weight: bold; }
 
-.clock-box, .date-container { position: relative; z-index: 1; }
-.clock { font-size: 3rem; font-weight: bold; font-family: monospace; }
-.kurdish-row { color: #facc15; font-weight: bold; margin-top: 5px; }
-
-/* Prayer List */
-.prayer-row { display: flex; justify-content: space-between; background: var(--card); padding: 15px 20px; margin: 8px auto; border-radius: 12px; border-right: 5px solid var(--accent); width: 90%; max-width: 400px; }
-
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 999; }
-.overlay.active { display: block; }
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    .prayer-cards-container { max-width: 800px; }
+    #liveClock { font-size: 5rem; }
+}
