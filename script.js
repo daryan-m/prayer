@@ -32,7 +32,8 @@ function formatKu(timeStr) {
     let [h, m] = timeStr.split(':').map(Number);
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    return `${toKu(h12)}:${toKu(m.toString().padStart(2,'0'))}   ${sfx}`; // Added extra spaces before suffix
+    // Space between numbers and colon for consistency
+    return `${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}   ${sfx}`;
 }
 
 async function fetchTimes(city) {
@@ -79,6 +80,7 @@ function updateClock() {
     let h = now.getHours();
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
+    // Using spaces around colons as requested
     document.getElementById('liveClock').innerHTML = `${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))} <span class="suffix">${sfx}</span>`;
     
     if(Object.keys(prayers).length > 0) {
