@@ -20,7 +20,8 @@
         <div class="sidebar-header">
             <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
             <h3 class="header-title">ڕێکخستنەکان</h3>
-            <div style="width: 25px;"></div> </div>
+            <div style="width: 30px;"></div> 
+        </div>
         
         <div class="sidebar-content">
             <details class="menu-item">
@@ -45,15 +46,15 @@
                 </div>
             </details>
 
-            <a href="https://youtube.com/@Daryan" class="menu-link youtube-white">
-                <i class="fab fa-youtube"></i> ئێمە لە یوتیوب
+            <a href="https://youtube.com/@Daryan" class="menu-link yt-container">
+                <i class="fab fa-youtube yt-icon"></i> <span class="yt-text">ئێمە لە یوتیوب</span>
             </a>
             
             <details class="menu-item">
                 <summary><i class="fas fa-info-circle"></i> دەربارە</summary>
                 <div class="about-info">
                     <p>گەشەپێدەر: داریان</p>
-                    <p>وەشان: ٢.٥.٠</p>
+                    <p>وەشان: ٢.٨.٠</p>
                 </div>
             </details>
         </div>
@@ -61,7 +62,7 @@
 
     <main class="container">
         <div class="clock-area">
-            <div id="liveClock" class="clock">٠٠ : ٠٠ : ٠٠ <span class="suffix">پ.ن</span></div>
+            <div id="liveClock" class="clock"></div>
         </div>
 
         <div class="date-section">
@@ -73,7 +74,7 @@
             </div>
         </div>
 
-        <div id="countdown" class="timer-tag big-timer">بارکردن...</div>
+        <div id="countdown" class="timer-tag big-timer"></div>
 
         <div class="select-wrapper">
             <select id="citySelect" class="city-box green-dark-dropdown" onchange="updateCity()">
