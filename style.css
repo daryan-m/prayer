@@ -10,7 +10,7 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--cyan); }
 .sidebar.active { right: 0; }
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px; }
-.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); order: 2; }
+.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); order: 1; }
 .close-btn { color: #f43f5e; font-size: 1.8rem; cursor: pointer; order: 2; } /* × بۆ لای چەپ */
 
 /* YouTube Icon Color */
