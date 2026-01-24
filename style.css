@@ -11,13 +11,11 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .sidebar.active { right: 0; }
 .sidebar-header {
     display: flex;
-    flex-direction: row; /* دڵنیابەرەوە کە row بێت */
-    justify-content: space-between; /* بۆ ئەوەی یەکێکیان بڕواتە ئەوپەڕی ڕاست و ئەوی تریان ئەوپەڕی چەپ */
-    align-items: center;
+    justify-content: space-between; /* بۆ ئەوەی نوسین و X لێک دوور بکەونەوە */
+    align-items: center;          /* بۆ ئەوەی لە ڕووی ستونییەوە لە یەک ئاست بن */
+    flex-direction: row-reverse;  /* ئەمە نوسینەکە دەباتە ڕاست و X دەباتە چەپ */
+    padding: 10px 15px;           /* کەمێک مەودا لە لای ڕاست و چەپ جێ دەهێڵێت */
     border-bottom: 1px solid #1e293b;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-    direction: ltr; /* ئەمە هەموو کێشەکە چارەسەر دەکات: X دەباتە چەپ و نوسینەکە بۆ ڕاست */
 }
 
 .header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); order: 2; }
