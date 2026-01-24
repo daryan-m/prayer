@@ -10,7 +10,7 @@
 <body>
 
     <header class="navbar">
-        <div class="logo"><b><i class="fas fa-mosque"></i> کاتەکانی بانگ</b></div>
+        <div class="logo"><b><i class="fas fa-mosque"></i>&nbsp;&nbsp;کاتەکانی بانگ</b></div>
         <div class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
     </header>
 
@@ -23,26 +23,39 @@
         </div>
         
         <div class="sidebar-content">
-            <details class="menu-item" open>
-                <summary><i class="fas fa-microphone"></i> بانگبێژەکان</summary>
-                <div id="adhanOptions">
+            <details class="menu-item">
+                <summary>بانگبێژەکان</summary>
+                <div class="adhan-options">
                     <div class="adhan-choice">
-                        <label><input type="radio" name="adhan" value="azan1" checked> مەککە</label>
+                        <label><input type="radio" name="adhan" checked> مەککە</label>
                         <i class="fas fa-play-circle play-btn" onclick="handleAdhan(this, 'https://www.islamcan.com/audio/adhan/azan1.mp3')"></i>
                     </div>
                     <div class="adhan-choice">
-                        <label><input type="radio" name="adhan" value="azan2"> مەدینە</label>
+                        <label><input type="radio" name="adhan"> مەدینە</label>
                         <i class="fas fa-play-circle play-btn" onclick="handleAdhan(this, 'https://www.islamcan.com/audio/adhan/azan2.mp3')"></i>
+                    </div>
+                    <div class="adhan-choice">
+                        <label><input type="radio" name="adhan"> عبدالباسط</label>
+                        <i class="fas fa-play-circle play-btn" onclick="handleAdhan(this, 'https://www.islamcan.com/audio/adhan/azan16.mp3')"></i>
+                    </div>
+                    <div class="adhan-choice">
+                        <label><input type="radio" name="adhan"> ئیسماعیل کۆچەر</label>
+                        <i class="fas fa-play-circle play-btn" onclick="handleAdhan(this, 'https://www.islamcan.com/audio/adhan/azan10.mp3')"></i>
                     </div>
                 </div>
             </details>
 
-            <a href="https://youtube.com/@Daryan" class="menu-link"><i class="fab fa-youtube"></i> ئێمە لە یوتیوب</a>
+            <a href="https://youtube.com/@Daryan" class="menu-link youtube-white">
+                <i class="fab fa-youtube"></i> ئێمە لە یوتیوب
+            </a>
             
-            <div class="about-section">
-                <p>گەشەپێدەر: داریان</p>
-                <p>وەشان: ٢.١.٠</p>
-            </div>
+            <details class="menu-item">
+                <summary>دەربارە</summary>
+                <div class="about-info">
+                    <p>گەشەپێدەر: داریان</p>
+                    <p>وەشان: ٢.٢.٠</p>
+                </div>
+            </details>
         </div>
     </aside>
 
@@ -52,8 +65,8 @@
         </div>
 
         <div class="date-section">
-            <div id="hijriDate" class="date-row primary-date">...</div>
-            <div class="date-row secondary-dates">
+            <div id="hijriDate" class="primary-date">...</div>
+            <div class="secondary-dates">
                 <span id="miladiDate">...</span>
                 <span class="v-line"></span>
                 <span id="kurdishDate">...</span>
