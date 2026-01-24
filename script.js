@@ -5,19 +5,22 @@ function toggleSidebar() {
     document.getElementById('overlay').classList.toggle('active');
 }
 
-// زیادکردنی دەقە بۆ کاتەکان
-function addMinutes(timeStr, mins) {
+// زیادکردنی دەقە بۆ کاتەکان (لۆژیکی چاککراو)
+function addMins(timeStr, mins) {
+    if(!timeStr) return "--:--";
     let [h, m] = timeStr.split(':').map(Number);
-    let date = new Date();
-    date.setHours(h, m + mins);
-    return date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
+    let d = new Date();
+    d.setHours(h, m + mins);
+    return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
 }
 
-// مێژووی کوردی (ڕێبەندان)
-function getKurdishDate() {
-    const months = ["چوارشەممە", "ڕێبەندان", "ڕەشەمێ", "خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز"];
-    // لێرەدا بە نموونە ۵ی ڕێبەندان دانراوە، دەتوانیت لۆژیکی ساڵنامە لێرە دابنێیت
-    return "۵ ـی ڕێبەندانی ۲۷۲٥";
+// حیسابکردنی ساڵی کوردی (ڕێبەندان ٢٧٢٥)
+function updateKurdishDate() {
+    const d = new Date();
+    // لۆژیکی سادە بۆ ساڵی کوردی (ساڵی ئێستا + ٧٠٠)
+    let kYear = d.getFullYear() + 700; 
+    // بۆ کانوونی دووەم (ڕێبەندان)
+    document.getElementById('kurdishDate').innerText = `کوردی: ۵ ـی ڕێبەندانی ${kYear}`;
 }
 
 async function getPrayerData(city) {
@@ -26,20 +29,19 @@ async function getPrayerData(city) {
         const data = await res.json();
         const t = data.data.timings;
 
-        // دەستکاری کاتەکان بەپێی داواکاری تۆ
+        // جێگیرکردنی کاتە زیادکراوەکان
         prayers = {
-            "بەیانی": addMinutes(t.Fajr, 6),
-            "ڕۆژهەڵاتن": addMinutes(t.Fajr, 73), // ١ سەعات و ١٣ دەقە دوای بەیانی
-            "نیوەڕۆ": addMinutes(t.Dhuhr, 6),
-            "عەسر": addMinutes(t.Asr, 2),
-            "ئێوارە": addMinutes(t.Maghrib, 8),
-            "خەوتنان": addMinutes(t.Isha, 2)
+            "بەیانی": addMins(t.Fajr, 6),
+            "ڕۆژهەڵاتن": addMins(t.Fajr, 73),
+            "نیوەڕۆ": addMins(t.Dhuhr, 6),
+            "عەسر": addMins(t.Asr, 2),
+            "ئێوارە": addMins(t.Maghrib, 8),
+            "خەوتنان": addMins(t.Isha, 2)
         };
 
         document.getElementById('hijriDate').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
-        document.getElementById('miladiDate').innerText = `میلادی: ${new Date().toLocaleDateString('en-GB')}`;
-        document.getElementById('kurdishDate').innerText = `کوردی: ${getKurdishDate()}`;
-
+        document.getElementById('miladiDate').innerText = `میلادی: ${d.toLocaleDateString('en-GB')}`;
+        updateKurdishDate();
         renderList();
     } catch (e) { console.log("Error Fetching Data"); }
 }
@@ -52,21 +54,17 @@ function renderList() {
     });
 }
 
-function previewAdhan() {
+function playAdhan(url) {
     const audio = document.getElementById('player');
-    audio.src = document.getElementById('adhanSelect').value;
+    audio.pause(); // وەستاندنی دەنگی پێشوو
+    audio.src = url;
     audio.play();
 }
 
 function updateClock() {
     const now = new Date();
-    let h = now.getHours();
-    const m = now.getMinutes().toString().padStart(2, '0');
-    const s = now.getSeconds().toString().padStart(2, '0');
-    document.getElementById('ampm').innerText = h >= 12 ? 'PM' : 'AM';
-    document.getElementById('liveClock').innerText = `${h % 12 || 12}:${m}:${s}`;
+    document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB', {hour12:false});
     
-    // کاتی ماوە (Countdown)
     if (Object.keys(prayers).length > 0) {
         let minDiff = Infinity, next = "";
         Object.entries(prayers).forEach(([n, t]) => {
