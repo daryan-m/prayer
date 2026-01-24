@@ -11,15 +11,22 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .sidebar.active { right: 0; }
 .sidebar-header {
     display: flex;
-    justify-content: space-between; /* بۆ ئەوەی نوسین و X لێک دوور بکەونەوە */
-    align-items: center;          /* بۆ ئەوەی لە ڕووی ستونییەوە لە یەک ئاست بن */
-    flex-direction: row-reverse;  /* ئەمە نوسینەکە دەباتە ڕاست و X دەباتە چەپ */
-    padding: 5px 5px;           /* کەمێک مەودا لە لای ڕاست و چەپ جێ دەهێڵێت */
+    flex-direction: row-reverse; /* نوسینەکە دەباتە ڕاست و X دەباتە چەپ */
+    justify-content: space-between; /* پاڵ بە هەردوولاوە دەنێت بۆ ئەوپەڕی چەپ و ڕاست */
+    align-items: center; 
+    padding: 10px 5px; /* ژمارەی ٥ـەکە کەم بکەرەوە بۆ ئەوەی زیاتر بچنە لایەکان */
+    width: 100%; /* دڵنیابوونەوە لەوەی تەواوی پانی پەنجەرەکە دەگرێتەوە */
     border-bottom: 1px solid #1e293b;
 }
 
-.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); order: 2; }
-.close-btn { color: #f43f5e; font-size: 1.8rem; cursor: pointer; order: 1; } /* × بۆ لای چەپ */
+.header-title {
+    margin: 0;
+    padding-right: 10px; /* مەودایەکی کەم بۆ نوسینەکە لە لای ڕاستەوە */
+}
+
+.close-btn {
+    padding-left: 10px; /* مەودایەکی کەم بۆ X لە لای چەپەوە */
+}
 
 /* YouTube Icon Color */
 .fa-youtube { color: #ff0000 !important; }
