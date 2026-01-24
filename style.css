@@ -1,4 +1,4 @@
-:root { --bg: #020617; --card: #0f172a; --cyan: #22d3ee; --green: #10b981; --white: #ffffff; --green-dark: rgba(16, 185, 129, 0.15); }
+:root { --bg: #020617; --card: #0f172a; --cyan: #22d3ee; --green: #10b981; --white: #ffffff; --green-dark: rgba(16, 185, 129, 0.2); }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
 body { background: var(--bg); color: var(--white); direction: rtl; overflow: hidden; font-size: 1.1rem; }
 
@@ -6,39 +6,47 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .navbar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 15px; background: rgba(15, 23, 42, 0.95); z-index: 1000; border-bottom: 1px solid var(--cyan); }
 .logo b { color: var(--cyan); font-size: 1.2rem; display: flex; align-items: center; }
 
-/* Sidebar - Layout Fix */
+/* Sidebar - X left, Title Center */
 .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--cyan); }
 .sidebar.active { right: 0; }
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px; }
-.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); }
-.close-btn { color: #f43f5e; font-size: 1.8rem; cursor: pointer; }
+.header-title { flex-grow: 1; text-align: center; font-size: 1.2rem; color: var(--cyan); order: 2; }
+.close-btn { color: #f43f5e; font-size: 1.8rem; cursor: pointer; order: 1; } /* × بۆ لای چەپ */
+
+/* YouTube Icon Color */
+.fa-youtube { color: #ff0000 !important; }
+.menu-link { text-decoration: none; color: white; display: block; padding: 15px 0; border-bottom: 1px solid #1e293b; }
 
 .menu-item summary { list-style: none; padding: 15px 0; border-bottom: 1px solid #1e293b; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; }
 .adhan-options { background: rgba(255,255,255,0.05); border-radius: 8px; margin: 8px 0; padding: 10px; }
 .adhan-choice { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-/* Main Elements */
+/* Main Elements & Clock Anti-Shake */
 .container { padding-top: 65px; display: flex; flex-direction: column; align-items: center; height: 100vh; gap: 10px; }
-.clock { font-size: 2.6rem; font-weight: bold; margin-top: 15px; display: flex; justify-content: center; align-items: center; width: 100%; }
+.clock { font-size: 2.6rem; font-weight: bold; margin-top: 25px; display: flex; justify-content: center; align-items: center; width: 100%; font-variant-numeric: tabular-nums; }
+.clock span { direction: ltr; display: inline-block; }
 .clock .suffix { font-size: 1.4rem; color: var(--cyan); margin-right: 15px; }
 
 .primary-date.centered { text-align: center; width: 100%; color: var(--green); font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
 .secondary-dates { font-size: 0.95rem; display: flex; gap: 12px; align-items: center; }
 .v-line { width: 1.5px; height: 16px; background: var(--cyan); opacity: 0.6; display: inline-block; }
 
-/* Countdown - White Text & Large Timer */
-.timer-tag.big-timer { min-width: 330px; font-size: 1.3rem; color: #ffffff; font-weight: bold; padding: 12px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 1px solid var(--cyan); margin: 5px 0; text-align: center; }
+/* Countdown */
+.timer-tag.big-timer { min-width: 330px; font-size: 1.2rem; color: #ffffff; font-weight: bold; padding: 12px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 1px solid var(--cyan); margin: 5px 0; text-align: center; }
+.timer-tag span { font-variant-numeric: tabular-nums; }
 
-/* City Select - Green Dark Lite Style with Arrow */
+/* City Select - Custom Select Color */
 .select-wrapper { position: relative; width: 92%; max-width: 450px; margin-bottom: 5px; }
-.green-dark-dropdown { width: 100%; padding: 12px; background: var(--green-dark); border: 1px solid rgba(16, 185, 129, 0.5); color: white; border-radius: 12px; font-size: 1.25rem; text-align: center; appearance: none; cursor: pointer; }
+.green-dark-dropdown { width: 100%; padding: 12px; background: var(--green-dark); border: 1px solid rgba(16, 185, 129, 0.5); color: white; border-radius: 12px; font-size: 1.25rem; text-align: center; appearance: none; cursor: pointer; outline: none; }
 .select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--green); pointer-events: none; }
-.green-dark-dropdown option { background: #0f172a; color: white; }
+/* ڕەنگی شارەکان کاتێک کلیکی لێ دەکەیت */
+.green-dark-dropdown option { background: #1e293b; color: white; }
 
 /* Prayer Cards */
 .prayer-grid { width: 92%; max-width: 450px; display: flex; flex-direction: column; gap: 6px; }
-.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 20px; border-radius: 12px; border-right: 6px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.4); }
-.p-time { color: var(--cyan); font-weight: bold; font-size: 1.3rem; }
+.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 20px; border-radius: 12px; border-right: 6px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.4); transition: 0.2s; }
+.prayer-row.inactive { border-right-color: #475569; opacity: 0.6; }
+.p-time { color: var(--cyan); font-weight: bold; font-size: 1.3rem; direction: ltr; font-variant-numeric: tabular-nums; }
 
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
 .sidebar-overlay.active { display: block; }
