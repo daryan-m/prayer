@@ -35,16 +35,16 @@ function formatKu(timeStr) {
     return `${toKu(h12)}:${toKu(m.toString().padStart(2,'0'))}  ${sfx}`;
 }
 
-function adjust(t, mins) {
-    let [h, m] = t.split(':').map(Number);
-    let d = new Date(); d.setHours(h, m + mins);
-    return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
-}
-
 async function fetchTimes(city) {
     const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
     const data = await res.json();
     const t = data.data.timings;
+
+    const adjust = (tm, mins) => {
+        let [h, m] = tm.split(':').map(Number);
+        let d = new Date(); d.setHours(h, m + mins);
+        return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+    };
 
     prayers = {
         "بەیانی": adjust(t.Fajr, 6),
@@ -55,7 +55,6 @@ async function fetchTimes(city) {
         "خەوتنان": adjust(t.Isha, 2)
     };
 
-    // Dates with labels
     document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
     document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
     document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
@@ -96,6 +95,5 @@ function updateClock() {
     }
 }
 
-function updateCity() { fetchTimes(document.getElementById('citySelect').value); }
 setInterval(updateClock, 1000);
 fetchTimes('Penjwin');
