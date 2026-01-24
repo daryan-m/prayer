@@ -10,15 +10,12 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--cyan); }
 .sidebar.active { right: 0; }
 .sidebar-header {
-    display: flex !important;
-    align-items: center !important;
     width: 100% !important;
     padding: 15px !important;
     border-bottom: 2px solid var(--cyan) !important;
     margin-bottom: 20px !important;
-    /* ئەمە هەموو شتێک ڕێک دەخات */
-    direction: rtl !important; 
-    position: relative !important;
+    display: block !important; /* لێرەدا فێڵەکەمان کرد، فلێکسەکەمان لادا */
+    overflow: hidden !important; /* بۆ ئەوەی هێڵەکە لە ژێر هەردووکیان بێت */
 }
 
 .header-title {
@@ -26,18 +23,16 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
     font-size: 1.3rem !important;
     font-weight: bold !important;
     margin: 0 !important;
-    /* پاڵ بە نوسینەکە دەنێت بۆ لای ڕاست */
-    margin-left: auto !important; 
-    text-align: right !important;
+    float: right !important; /* نوسینەکە بە زۆر دەبەین بۆ ڕاست */
 }
 
 .close-btn {
     color: #ff0000 !important;
     font-size: 1.8rem !important;
     cursor: pointer !important;
-    /* پاڵ بە X دەنێت بۆ لای چەپ */
-    margin-right: auto !important; 
+    float: left !important; /* نیشانەی X بە زۆر دەبەین بۆ چەپ */
 }
+
 
 
 
