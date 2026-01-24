@@ -1,22 +1,42 @@
-const kurdishNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
-const toKu = (n) => String(n).replace(/[0-9]/g, m => kurdishNums[m]);
+const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
 
 let prayers = {};
+let isPlaying = false;
 
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
 }
 
-function formatTimeKu(timeStr) {
-    let [h, m] = timeStr.split(':').map(Number);
-    let suffix = h >= 12 ? "د.ن" : "پ.ن";
-    let h12 = h % 12 || 12;
-    return `${toKu(h12)}:${toKu(m.toString().padStart(2,'0'))} ${suffix}`;
+function handleAdhan(btn, url) {
+    const audio = document.getElementById('adhanAudio');
+    if (isPlaying && audio.src === url) {
+        audio.pause();
+        btn.classList.replace('fa-stop-circle', 'fa-play-circle');
+        isPlaying = false;
+    } else {
+        document.querySelectorAll('.play-btn').forEach(b => b.classList.replace('fa-stop-circle', 'fa-play-circle'));
+        audio.src = url;
+        audio.play();
+        btn.classList.replace('fa-play-circle', 'fa-stop-circle');
+        isPlaying = true;
+    }
+    audio.onended = () => {
+        btn.classList.replace('fa-stop-circle', 'fa-play-circle');
+        isPlaying = false;
+    };
 }
 
-function adjust(time, mins) {
-    let [h, m] = time.split(':').map(Number);
+function formatKu(timeStr) {
+    let [h, m] = timeStr.split(':').map(Number);
+    let sfx = h >= 12 ? "د.ن" : "پ.ن";
+    let h12 = h % 12 || 12;
+    return `${toKu(h12)}:${toKu(m.toString().padStart(2,'0'))}  ${sfx}`;
+}
+
+function adjust(t, mins) {
+    let [h, m] = t.split(':').map(Number);
     let d = new Date(); d.setHours(h, m + mins);
     return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
 }
@@ -28,17 +48,17 @@ async function fetchTimes(city) {
 
     prayers = {
         "بەیانی": adjust(t.Fajr, 6),
-        "خۆرهەڵاتن": "07:02", // جێگیر وەک داوات کردبوو
+        "خۆرهەڵاتن": "07:02",
         "نیوەڕۆ": adjust(t.Dhuhr, 6),
         "عەسر": adjust(t.Asr, 2),
         "ئێوارە": adjust(t.Maghrib, 8),
         "خەوتنان": adjust(t.Isha, 2)
     };
 
-    // Dates
-    document.getElementById('hijriDate').innerText = toKu(`${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`);
-    document.getElementById('miladiDate').innerText = toKu(new Date().toLocaleDateString('en-GB'));
-    document.getElementById('kurdishDate').innerText = toKu("٥ی ڕێبەندانی ٢٧٢٥");
+    // Dates with labels
+    document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
+    document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
+    document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
     
     render();
 }
@@ -49,8 +69,8 @@ function render() {
     Object.entries(prayers).forEach(([name, time]) => {
         list.innerHTML += `
             <div class="prayer-row">
-                <div class="p-left"><i class="fas fa-volume-mute"></i> <span>${name}</span></div>
-                <div class="p-time">${formatTimeKu(time)}</div>
+                <div class="p-name"><i class="fas fa-volume-mute"></i> <span>${name}</span></div>
+                <div class="p-time">${formatKu(time)}</div>
             </div>`;
     });
 }
@@ -58,11 +78,10 @@ function render() {
 function updateClock() {
     const now = new Date();
     let h = now.getHours();
-    let suffix = h >= 12 ? "د.ن" : "پ.ن";
+    let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    document.getElementById('liveClock').innerHTML = `${toKu(h12)}:${toKu(now.getMinutes().toString().padStart(2,'0'))}:${toKu(now.getSeconds().toString().padStart(2,'0'))} <small>${suffix}</small>`;
+    document.getElementById('liveClock').innerHTML = `${toKu(h12)}:${toKu(now.getMinutes().toString().padStart(2,'0'))}:${toKu(now.getSeconds().toString().padStart(2,'0'))} <span class="suffix">${sfx}</span>`;
     
-    // Countdown Logic
     if(Object.keys(prayers).length > 0) {
         let minDiff = Infinity, next = "";
         Object.entries(prayers).forEach(([n, t]) => {
@@ -77,12 +96,6 @@ function updateClock() {
     }
 }
 
-function previewAdhan(url) {
-    const a = document.getElementById('adhanAudio');
-    a.src = url; a.play();
-}
-
 function updateCity() { fetchTimes(document.getElementById('citySelect').value); }
-
 setInterval(updateClock, 1000);
 fetchTimes('Penjwin');
