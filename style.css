@@ -60,7 +60,21 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 
 /* City Select - Custom Select Color */
 .select-wrapper { position: relative; width: 92%; max-width: 450px; margin-bottom: 5px; }
-.green-dark-dropdown { width: 100%; padding: 12px; background: var(--green-dark); border: 1px solid rgba(16, 185, 129, 0.5); color: white; border-radius: 12px; font-size: 1.25rem; text-align: center; appearance: none; cursor: pointer; outline: none; }
+/* ئەوەی پێشتر هەبوو وەک خۆی بمێنێتەوە، تەنها ئەم بەشە نوێ بکەرەوە */
+
+.green-dark-dropdown option { 
+    background: #0f173a !important; /* ڕەنگی تاریکی شیک لەبری خۆڵەمێشی */
+    color: white !important; 
+}
+
+/* بۆ دڵنیابوون لەوەی پ.ن و د.ن دەچنە ئەودیو */
+.p-time {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 10px;
+    align-items: center;
+}
+
 .select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--green); pointer-events: none; }
 /* ڕەنگی شارەکان کاتێک کلیکی لێ دەکەیت */
 .green-dark-dropdown option { background: #1e293b; color: white; }
