@@ -23,10 +23,11 @@ function formatKu(timeStr) {
     let [h, m] = timeStr.split(':').map(Number);
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    // کاتەکە بە جیا و پ.ن بە جیا بۆ ئەوەی تێکەڵ نەبن
+    // لێرەدا کاتەکەمان خستە پێش پ.ن/د.ن بۆ ئەوەی بکەوێتە لای ڕاست
     let formattedTime = toKu(h12) + " : " + toKu(m.toString().padStart(2,'0'));
-    return `<span style="color: #94a3b8; font-size: 0.9rem;">${sfx}</span> <span style="unicode-bidi: bidi-override; direction: ltr;">${formattedTime}</span>`;
+    return `<span style="unicode-bidi: bidi-override; direction: ltr;">${formattedTime}</span> <span style="color: #94a3b8; font-size: 0.9rem;">${sfx}</span>`;
 }
+
 
 async function fetchTimes(city) {
     try {
