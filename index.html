@@ -2,70 +2,81 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>کاتەکانی بانگ - PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کاتەکانی بانگ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-logo"><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
-        <button class="menu-btn" onclick="toggleMenu()" aria-label="Menu">
-            <i class="fas fa-bars"></i>
-        </button>
-    </nav>
+    <header class="navbar">
+        <div class="logo"><i class="fas fa-mosque"></i> کاتەکانی بانگ</div>
+        <div class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    </header>
 
-    <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <i class="fas fa-times close-btn" onclick="toggleMenu()"></i>
             <h3>ڕێکخستنەکان</h3>
+            <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
         </div>
         
         <div class="sidebar-content">
-            <label><i class="fas fa-microphone"></i> هەڵبژاردنی بانگبێژ</label>
-            <div class="adhan-grid">
-                <button onclick="playAdhan('https://www.islamcan.com/audio/adhan/azan1.mp3')">مەککە <i class="fas fa-play"></i></button>
-                <button onclick="playAdhan('https://www.islamcan.com/audio/adhan/azan2.mp3')">مەدینە <i class="fas fa-play"></i></button>
-                <button onclick="playAdhan('https://www.islamcan.com/audio/adhan/azan16.mp3')">عبدالباسط <i class="fas fa-play"></i></button>
-            </div>
-            <button class="stop-btn" onclick="stopAdhan()"><i class="fas fa-stop"></i> وەستاندنی دەنگ</button>
+            <details class="menu-item">
+                <summary><i class="fas fa-microphone"></i> بانگبێژەکان</summary>
+                <div id="adhanOptions">
+                    <div class="adhan-choice">
+                        <label><input type="radio" name="adhan" value="azan1" checked> مەککە</label>
+                        <i class="fas fa-play-circle" onclick="previewAdhan('https://www.islamcan.com/audio/adhan/azan1.mp3')"></i>
+                    </div>
+                    <div class="adhan-choice">
+                        <label><input type="radio" name="adhan" value="azan2"> مەدینە</label>
+                        <i class="fas fa-play-circle" onclick="previewAdhan('https://www.islamcan.com/audio/adhan/azan2.mp3')"></i>
+                    </div>
+                    <div class="adhan-choice">
+                        <label><input type="radio" name="adhan" value="azan3"> عبدالباسط</label>
+                        <i class="fas fa-play-circle" onclick="previewAdhan('https://www.islamcan.com/audio/adhan/azan16.mp3')"></i>
+                    </div>
+                </div>
+            </details>
+
+            <a href="https://youtube.com/@Daryan" class="menu-link"><i class="fab fa-youtube"></i> ئێمە لە یوتیوب</a>
+            
+            <details class="menu-item">
+                <summary><i class="fas fa-info-circle"></i> دەربارە</summary>
+                <div class="about-info">
+                    گەشەپێدەر: داریان<br>وەشان: ٢.٠.٠
+                </div>
+            </details>
         </div>
     </aside>
 
-    <main class="app-container">
-        <section class="hero-section">
-            <div class="mosque-overlay"></div>
-            <div class="live-info">
-                <h1 id="liveClock">00:00:00</h1>
-                <div class="date-group">
-                    <p id="kurdishDate" class="k-date">...</p>
-                    <p id="hijriDate">...</p>
-                    <p id="miladiDate">...</p>
+    <main class="container">
+        <div id="countdown" class="timer-banner">بارکردن...</div>
+
+        <div class="hero">
+            <div id="liveClock" class="clock">٠٠:٠٠:٠٠ <small>پ.ن</small></div>
+            <div class="date-box">
+                <div id="hijriDate" class="hijri-main">...</div>
+                <div class="sub-dates">
+                    <span id="miladiDate">...</span>
+                    <span class="divider"></span>
+                    <span id="kurdishDate">...</span>
                 </div>
             </div>
-        </section>
-
-        <div id="nextPrayerCounter" class="countdown-box">بارکردن...</div>
-
-        <div class="city-picker">
-            <i class="fas fa-map-marker-alt"></i>
-            <select id="citySelect" onchange="updateCity()">
-                <option value="Penjwin">پێنجوێن</option>
-                <option value="Sulaymaniyah">سلێمانی</option>
-                <option value="Erbil">هەولێر</option>
-                <option value="Duhok">دهۆک</option>
-                <option value="Kirkuk">کەرکوک</option>
-            </select>
         </div>
 
-        <div id="prayerCards" class="prayer-cards-container">
-            </div>
+        <select id="citySelect" class="modern-select" onchange="updateCity()">
+            <option value="Penjwin">پێنجوێن</option>
+            <option value="Sulaymaniyah">سلێمانی</option>
+            <option value="Erbil">هەولێر</option>
+        </select>
+
+        <div id="prayerList" class="prayer-list"></div>
     </main>
 
-    <audio id="adhanPlayer"></audio>
+    <audio id="adhanAudio"></audio>
     <script src="script.js"></script>
 </body>
 </html>
