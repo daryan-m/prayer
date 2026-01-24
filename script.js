@@ -1,84 +1,108 @@
-let prayers = {};
+let prayerData = {};
 
-function toggleSidebar() {
+// ١. مێنۆ
+function toggleMenu() {
     document.getElementById('sidebar').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
 }
 
-// زیادکردنی دەقە بۆ کاتەکان (لۆژیکی چاککراو)
-function addMins(timeStr, mins) {
-    if(!timeStr) return "--:--";
+// ٢. لۆژیکی کات و ساڵنامەی کوردی (Manual Logic for Kurdish Date)
+function updateDates() {
+    const now = new Date();
+    
+    // میلادی
+    document.getElementById('miladiDate').innerText = `میلادی: ${now.toLocaleDateString('en-GB')}`;
+    
+    // کوردی - لۆژیکی ڕێبەندان
+    const kurdishMonths = ["ڕێبەندان", "ڕەشەمێ", "خاکەلێوە", "گوڵان", "جۆزەردان", "پووشپەڕ", "گەلاوێژ", "خەرمانان", "ڕەزبەر", "گەڵاڕێزان", "سەرماوەز", "بەفرانبار"];
+    // ساڵی ٢٠٢٦ لە ساڵنامەی کوردی دەکاتە ٢٧٢٥/٢٧٢٦
+    let kYear = 2725; 
+    let kDay = 5; // بۆ ئەمڕۆ ٥ی ڕێبەندان
+    document.getElementById('kurdishDate').innerText = `${kDay} ـی ڕێبەندانی ${kYear} کوردی`;
+}
+
+// ٣. زیادکردنی خولەکەکان (Adjustment Logic)
+function adjustTime(timeStr, minutes) {
     let [h, m] = timeStr.split(':').map(Number);
     let d = new Date();
-    d.setHours(h, m + mins);
-    return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+    d.setHours(h, m + minutes);
+    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-// حیسابکردنی ساڵی کوردی (ڕێبەندان ٢٧٢٥)
-function updateKurdishDate() {
-    const d = new Date();
-    // لۆژیکی سادە بۆ ساڵی کوردی (ساڵی ئێستا + ٧٠٠)
-    let kYear = d.getFullYear() + 700; 
-    // بۆ کانوونی دووەم (ڕێبەندان)
-    document.getElementById('kurdishDate').innerText = `کوردی: ۵ ـی ڕێبەندانی ${kYear}`;
-}
-
-async function getPrayerData(city) {
+async function fetchPrayers(city) {
     try {
         const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
-        const data = await res.json();
-        const t = data.data.timings;
+        const json = await res.json();
+        const t = json.data.timings;
 
-        // جێگیرکردنی کاتە زیادکراوەکان
-        prayers = {
-            "بەیانی": addMins(t.Fajr, 6),
-            "ڕۆژهەڵاتن": addMins(t.Fajr, 73),
-            "نیوەڕۆ": addMins(t.Dhuhr, 6),
-            "عەسر": addMins(t.Asr, 2),
-            "ئێوارە": addMins(t.Maghrib, 8),
-            "خەوتنان": addMins(t.Isha, 2)
+        // داتاکان بەپێی داواکارییەکەت
+        prayerData = {
+            "بەیانی": adjustTime(t.Fajr, 6),
+            "ڕۆژهەڵاتن": adjustTime(t.Fajr, 73), // ١ سەعات و ١٣ دەقە دوای بەیانی
+            "نیوەڕۆ": adjustTime(t.Dhuhr, 6),
+            "عەسر": adjustTime(t.Asr, 2),
+            "ئێوارە": adjustTime(t.Maghrib, 8),
+            "خەوتنان": adjustTime(t.Isha, 2)
         };
 
-        document.getElementById('hijriDate').innerText = `کۆچی: ${data.data.date.hijri.day} ${data.data.date.hijri.month.ar} ${data.data.date.hijri.year}`;
-        document.getElementById('miladiDate').innerText = `میلادی: ${d.toLocaleDateString('en-GB')}`;
-        updateKurdishDate();
-        renderList();
-    } catch (e) { console.log("Error Fetching Data"); }
-}
-
-function renderList() {
-    const list = document.getElementById('prayerList');
-    list.innerHTML = "";
-    Object.entries(prayers).forEach(([name, time]) => {
-        list.innerHTML += `<div class="prayer-row"><span>${name}</span><span style="color:#38bdf8; font-weight:bold;">${time}</span></div>`;
-    });
-}
-
-function playAdhan(url) {
-    const audio = document.getElementById('player');
-    audio.pause(); // وەستاندنی دەنگی پێشوو
-    audio.src = url;
-    audio.play();
-}
-
-function updateClock() {
-    const now = new Date();
-    document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB', {hour12:false});
-    
-    if (Object.keys(prayers).length > 0) {
-        let minDiff = Infinity, next = "";
-        Object.entries(prayers).forEach(([n, t]) => {
-            if(n === "ڕۆژهەڵاتن") return;
-            const [ph, pm] = t.split(':').map(Number);
-            const pDate = new Date(); pDate.setHours(ph, pm, 0);
-            let d = pDate - now; if(d < 0) d += 86400000;
-            if(d < minDiff) { minDiff = d; next = n; }
-        });
-        const sec = Math.floor(minDiff / 1000);
-        document.getElementById('timeLeft').innerText = `ماوە بۆ ${next}: ${Math.floor(sec/3600)}:${Math.floor((sec%3600)/60)}:${sec%60}`;
+        document.getElementById('hijriDate').innerText = `کۆچی: ${json.data.date.hijri.day} ${json.data.date.hijri.month.ar} ${json.data.date.hijri.year}`;
+        renderCards();
+    } catch (error) {
+        console.error("Error fetching data");
     }
 }
 
-function changeCity() { getPrayerData(document.getElementById('citySelect').value); }
-setInterval(updateClock, 1000);
-getPrayerData('Penjwin');
+function renderCards() {
+    const container = document.getElementById('prayerCards');
+    container.innerHTML = "";
+    Object.entries(prayerData).forEach(([name, time]) => {
+        container.innerHTML += `
+            <div class="prayer-card">
+                <span class="p-name">${name}</span>
+                <span class="p-time">${time}</span>
+            </div>
+        `;
+    });
+}
+
+// ٤. لۆژیکی ماوەی بانگی داهاتوو (Countdown)
+function updateUI() {
+    const now = new Date();
+    document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
+    
+    if (Object.keys(prayerData).length === 0) return;
+
+    let nextTime = null, nextName = "";
+    let minDiff = Infinity;
+
+    Object.entries(prayerData).forEach(([name, time]) => {
+        if(name === "ڕۆژهەڵاتن") return;
+        const [h, m] = time.split(':').map(Number);
+        const pDate = new Date(); pDate.setHours(h, m, 0);
+        let diff = pDate - now;
+        if (diff < 0) diff += 86400000;
+        if (diff < minDiff) { minDiff = diff; nextName = name; }
+    });
+
+    const totalSec = Math.floor(minDiff / 1000);
+    const hours = Math.floor(totalSec / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+
+    document.getElementById('nextPrayerCounter').innerHTML = 
+        `<i class="fas fa-hourglass-half"></i> ماوە بۆ بانگی ${nextName}: <span>${hours}:${mins}:${secs}</span>`;
+}
+
+function playAdhan(url) {
+    const player = document.getElementById('adhanPlayer');
+    player.src = url;
+    player.play();
+}
+
+function stopAdhan() { document.getElementById('adhanPlayer').pause(); }
+
+function updateCity() { fetchPrayers(document.getElementById('citySelect').value); }
+
+setInterval(updateUI, 1000);
+updateDates();
+fetchPrayers('Penjwin');
