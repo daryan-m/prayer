@@ -18,8 +18,8 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
             <h3>ڕێکخستنەکان</h3>
+            <i class="fas fa-times close-btn" onclick="toggleSidebar()"></i>
         </div>
         
         <div class="sidebar-content">
@@ -53,7 +53,7 @@
                 <summary>دەربارە</summary>
                 <div class="about-info">
                     <p>گەشەپێدەر: داریان</p>
-                    <p>وەشان: ٢.٢.٠</p>
+                    <p>وەشان: ٢.٣.٠</p>
                 </div>
             </details>
         </div>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="date-section">
-            <div id="hijriDate" class="primary-date">...</div>
+            <div id="hijriDate" class="primary-date centered">...</div>
             <div class="secondary-dates">
                 <span id="miladiDate">...</span>
                 <span class="v-line"></span>
@@ -73,9 +73,9 @@
             </div>
         </div>
 
-        <div id="countdown" class="timer-tag">بارکردن...</div>
+        <div id="countdown" class="timer-tag long-tag">بارکردن...</div>
 
-        <select id="citySelect" class="city-box" onchange="updateCity()">
+        <select id="citySelect" class="city-box modern-dropdown" onchange="updateCity()">
             <option value="Penjwin">پێنجوێن</option>
             <option value="Sulaymaniyah">سلێمانی</option>
             <option value="Erbil">هەولێر</option>
