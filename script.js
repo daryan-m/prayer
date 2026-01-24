@@ -2,8 +2,8 @@ const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','
 const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
 
 let prayers = {};
-// لە سەرەتادا هیچ بانگێک ئەکتیڤ نییە
-let activePrayers = JSON.parse(localStorage.getItem('activePrayers')) || [];
+// موکەبەرەکان لە سەرەتادا هەموویان ناچالاکن (لیستەکە بەتاڵە)
+let activePrayers = []; 
 
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
@@ -16,56 +16,45 @@ function toggleActive(name) {
     } else {
         activePrayers.push(name);
     }
-    localStorage.setItem('activePrayers', JSON.stringify(activePrayers));
     render();
 }
 
-function handleAdhan(btn, url) {
-    const audio = document.getElementById('adhanAudio');
-    if (!audio.paused && audio.src === url) {
-        audio.pause();
-        btn.classList.replace('fa-stop-circle', 'fa-play-circle');
-    } else {
-        document.querySelectorAll('.play-btn').forEach(b => b.classList.replace('fa-stop-circle', 'fa-play-circle'));
-        audio.src = url;
-        audio.play();
-        btn.classList.replace('fa-play-circle', 'fa-stop-circle');
-    }
-}
-
-// کاتی بانگەکان: پ.ن لە چەپ، کات لە ڕاست (بێ چرکە)
 function formatKu(timeStr) {
     let [h, m] = timeStr.split(':').map(Number);
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
-    return `<span class="sfx-tag">${sfx}</span> &nbsp; <span style="direction: ltr; display: inline-block;">${toKu(h12)} : ${toKu(m.toString().padStart(2,'0'))}</span>`;
+    // کاتەکە بە جیا و پ.ن بە جیا بۆ ئەوەی تێکەڵ نەبن
+    let formattedTime = toKu(h12) + " : " + toKu(m.toString().padStart(2,'0'));
+    return `<span style="color: #94a3b8; font-size: 0.9rem;">${sfx}</span> <span style="unicode-bidi: bidi-override; direction: ltr;">${formattedTime}</span>`;
 }
 
 async function fetchTimes(city) {
-    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
-    const data = await res.json();
-    const t = data.data.timings;
+    try {
+        const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
+        const data = await res.json();
+        const t = data.data.timings;
 
-    const adjust = (tm, mins) => {
-        let [h, m] = tm.split(':').map(Number);
-        let d = new Date(); d.setHours(h, m + mins);
-        return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
-    };
+        const adjust = (tm, mins) => {
+            let [h, m] = tm.split(':').map(Number);
+            let d = new Date(); d.setHours(h, m + mins);
+            return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+        };
 
-    prayers = {
-        "بەیانی": adjust(t.Fajr, 6),
-        "خۆرهەڵاتن": "07:02",
-        "نیوەڕۆ": adjust(t.Dhuhr, 6),
-        "عەسر": adjust(t.Asr, 2),
-        "ئێوارە": adjust(t.Maghrib, 8),
-        "خەوتنان": adjust(t.Isha, 2)
-    };
+        prayers = {
+            "بەیانی": adjust(t.Fajr, 6),
+            "خۆرهەڵاتن": "07:02",
+            "نیوەڕۆ": adjust(t.Dhuhr, 6),
+            "عەسر": adjust(t.Asr, 2),
+            "ئێوارە": adjust(t.Maghrib, 8),
+            "خەوتنان": adjust(t.Isha, 2)
+        };
 
-    document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
-    document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
-    document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
-    
-    render();
+        document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
+        document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
+        document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
+        
+        render();
+    } catch (e) { console.error("Error fetching times"); }
 }
 
 function render() {
@@ -90,11 +79,10 @@ function updateClock() {
     let sfx = h >= 12 ? "د.ن" : "پ.ن";
     let h12 = h % 12 || 12;
     
-    // کاتژمێری سەرەکی: h:m:s لە چەپەوە
+    // کاتژمێری سەرەکی بە شێوازی h:m:s لە چەپەوە
+    let timeStr = toKu(h12) + " : " + toKu(now.getMinutes().toString().padStart(2,'0')) + " : " + toKu(now.getSeconds().toString().padStart(2,'0'));
     document.getElementById('liveClock').innerHTML = `
-        <span style="direction: ltr; display: inline-block; min-width: 200px; text-align: center;">
-            ${toKu(h12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))}
-        </span> 
+        <span style="unicode-bidi: bidi-override; direction: ltr; display: inline-block;">${timeStr}</span> 
         <span class="suffix">${sfx}</span>`;
     
     if(Object.keys(prayers).length > 0) {
@@ -106,16 +94,19 @@ function updateClock() {
             let diff = pDate - now; if(diff < 0) diff += 86400000;
             if(diff < minDiff) { minDiff = diff; next = n; }
         });
-        const s = Math.floor(minDiff / 1000);
-        const hours = toKu(Math.floor(s/3600));
-        const minutes = toKu(Math.floor((s%3600)/60)).padStart(2, '٠');
-        const seconds = toKu(s%60).padStart(2, '٠');
         
-        // کاتی ماوە: h:m:s لە چەپەوە
+        const s = Math.floor(minDiff / 1000);
+        let h_rem = Math.floor(s/3600);
+        let m_rem = Math.floor((s%3600)/60);
+        let s_rem = s%60;
+        
+        // کاتی ماوە بە شێوازی h:m:s لە چەپەوە
+        let countdownStr = toKu(h_rem) + " : " + toKu(m_rem.toString().padStart(2,'٠')) + " : " + toKu(s_rem.toString().padStart(2,'٠'));
+        
         document.getElementById('countdown').innerHTML = `
             ماوە بۆ بانگی ${next} : 
-            <span style="color: #22d3ee; font-size: 1.4rem; direction: ltr; display: inline-block;">
-                ${hours} : ${minutes} : ${seconds}
+            <span style="color: #22d3ee; font-size: 1.4rem; unicode-bidi: bidi-override; direction: ltr; display: inline-block;">
+                ${countdownStr}
             </span>`;
     }
 }
