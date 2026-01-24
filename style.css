@@ -11,22 +11,25 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 .sidebar.active { right: 0; }
 .sidebar-header {
     display: flex;
-    flex-direction: row-reverse; /* نوسینەکە دەباتە ڕاست و X دەباتە چەپ */
-    justify-content: space-between; /* پاڵ بە هەردوولاوە دەنێت بۆ ئەوپەڕی چەپ و ڕاست */
-    align-items: center; 
-    padding: 10px 5px; /* ژمارەی ٥ـەکە کەم بکەرەوە بۆ ئەوەی زیاتر بچنە لایەکان */
-    width: 100%; /* دڵنیابوونەوە لەوەی تەواوی پانی پەنجەرەکە دەگرێتەوە */
-    border-bottom: 1px solid #1e293b;
+    justify-content: space-between; /* پاڵنانی هەردوولا بۆ دوورترین خاڵ */
+    align-items: center;
+    width: 100%;
+    padding: 15px 10px; /* کەمێک مەودای ناوەکی */
+    direction: ltr; /* ئەمە X دەخاتە چەپ و نوسینەکە دەخاتە ڕاست */
 }
 
 .header-title {
     margin: 0;
-    padding-right: 5px; /* مەودایەکی کەم بۆ نوسینەکە لە لای ڕاستەوە */
+    flex: 0 1 auto; /* ڕێگری دەکات لەوەی نوسینەکە هەموو پاناییەکە داگیر بکات */
+    text-align: right;
+    white-space: nowrap; /* ناهێڵێت نوسینەکە ببێت بە دوو دێڕ */
 }
 
 .close-btn {
-    padding-left: 5px; /* مەودایەکی کەم بۆ X لە لای چەپەوە */
+    flex: 0 1 auto;
+    cursor: pointer;
 }
+
 
 /* YouTube Icon Color */
 .fa-youtube { color: #ff0000 !important; }
