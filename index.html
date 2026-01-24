@@ -28,25 +28,25 @@
                 <summary><i class="fas fa-microphone-alt"></i> بانگبێژەکان</summary>
                 <div class="adhan-options">
                     <div class="adhan-choice">
-                        <label><input type="radio" name="adhan" value="azan1" checked> مەککە</label>
+                        <label><input type="radio" name="adhan" checked> مەککە</label>
                         <i class="fas fa-play-circle play-btn" onclick="handlePreview(this, 'https://www.islamcan.com/audio/adhan/azan1.mp3')"></i>
                     </div>
                     <div class="adhan-choice">
-                        <label><input type="radio" name="adhan" value="azan2"> مەدینە</label>
+                        <label><input type="radio" name="adhan"> مەدینە</label>
                         <i class="fas fa-play-circle play-btn" onclick="handlePreview(this, 'https://www.islamcan.com/audio/adhan/azan2.mp3')"></i>
                     </div>
                 </div>
             </details>
 
-            <a href="https://youtube.com/@Daryan" class="menu-link yt-link">
-                <i class="fab fa-youtube yt-icon"></i> <span class="white-text">ئێمە لە یوتیوب</span>
+            <a href="https://youtube.com/@Daryan" class="menu-link youtube-link-custom">
+                <i class="fab fa-youtube yt-red"></i> <span class="yt-text">ئێمە لە یوتیوب</span>
             </a>
             
             <details class="menu-item">
                 <summary><i class="fas fa-info-circle"></i> دەربارە</summary>
                 <div class="about-info">
                     <p>گەشەپێدەر: داریان</p>
-                    <p>وەشان: ٢.٦.٠</p>
+                    <p>وەشان: ٢.٧.٠</p>
                 </div>
             </details>
         </div>
@@ -54,7 +54,7 @@
 
     <main class="container">
         <div class="clock-area">
-            <div id="liveClock" class="clock ltr-dir">٠٠ : ٠٠ : ٠٠ <span class="suffix">پ.ن</span></div>
+            <div id="liveClock" class="clock"></div>
         </div>
 
         <div class="date-section">
@@ -66,10 +66,10 @@
             </div>
         </div>
 
-        <div id="countdown" class="timer-tag big-timer">بارکردن...</div>
+        <div id="countdown" class="timer-tag big-timer"></div>
 
         <div class="select-wrapper">
-            <select id="citySelect" class="city-box modern-dropdown" onchange="updateCity()">
+            <select id="citySelect" class="city-box green-dark-dropdown" onchange="updateCity()">
                 <option value="Penjwin">پێنجوێن</option>
                 <option value="Sulaymaniyah">سلێمانی</option>
                 <option value="Erbil">هەولێر</option>
