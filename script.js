@@ -2,144 +2,84 @@ const kuNums = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','
 const toKu = (n) => String(n).replace(/[0-9]/g, m => kuNums[m]);
 
 let prayers = {};
-// موکەبەرەکان لە سەرەتادا هەموویان ناچالاکن (لیستەکە بەتاڵە)
-let activePrayers = []; 
+let activePrayers = ["بەیانی", "نیوەڕۆ", "عەسر", "ئێوارە", "خەوتنان"];
 
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
 }
 
-function toggleActive(name) {
-    if (activePrayers.includes(name)) {
-        activePrayers = activePrayers.filter(p => p !== name);
-    } else {
-        activePrayers.push(name);
-    }
-    render();
+function openModal(id) {
+    if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
+    document.getElementById(id).style.display = 'flex';
+    if(id === 'dhikrOverlay') showDhikrCategories();
+    if(id === 'eventOverlay') renderEvents();
 }
 
-function formatKu(timeStr) {
-    let [h, m] = timeStr.split(':').map(Number);
-    let sfx = h >= 12 ? "د.ن" : "پ.ن";
-    let h12 = h % 12 || 12;
-    // لێرەدا کاتەکەمان خستە پێش پ.ن/د.ن بۆ ئەوەی بکەوێتە لای ڕاست
-    let formattedTime = toKu(h12) + " : " + toKu(m.toString().padStart(2,'0'));
-    return `<span style="unicode-bidi: bidi-override; direction: ltr;">${formattedTime}</span> <span style="color: #94a3b8; font-size: 0.9rem;">${sfx}</span>`;
-}
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-
+// --- لۆژیکی کاتەکان ---
 async function fetchTimes(city) {
-    try {
-        const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
-        const data = await res.json();
-        const t = data.data.timings;
-
-        const adjust = (tm, mins) => {
-            let [h, m] = tm.split(':').map(Number);
-            let d = new Date(); d.setHours(h, m + mins);
-            return d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
-        };
-
-        prayers = {
-            "بەیانی": adjust(t.Fajr, 6),
-            "خۆرهەڵاتن": "07:02",
-            "نیوەڕۆ": adjust(t.Dhuhr, 6),
-            "عەسر": adjust(t.Asr, 2),
-            "ئێوارە": adjust(t.Maghrib, 8),
-            "خەوتنان": adjust(t.Isha, 2)
-        };
-
-        document.getElementById('hijriDate').innerText = `کۆچی : ${toKu(data.data.date.hijri.day)} ـی ${data.data.date.hijri.month.ar} ـی ${toKu(data.data.date.hijri.year)}`;
-        document.getElementById('miladiDate').innerText = `میلادی : ${toKu(new Date().toLocaleDateString('en-GB'))}`;
-        document.getElementById('kurdishDate').innerText = `کوردی : ${toKu("٥ ـی ڕێبەندانی ٢٧٢٥")}`;
-        
-        render();
-    } catch (e) { console.error("Error fetching times"); }
+    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Iraq&method=3`);
+    const data = await res.json();
+    const t = data.data.timings;
+    prayers = { "بەیانی": t.Fajr, "خۆرهەڵاتن": t.Sunrise, "نیوەڕۆ": t.Dhuhr, "عەسر": t.Asr, "ئێوارە": t.Maghrib, "خەوتنان": t.Isha };
+    render();
 }
 
 function render() {
     const list = document.getElementById('prayerList');
-    list.innerHTML = "";
-    Object.entries(prayers).forEach(([name, time]) => {
+    list.innerHTML = Object.entries(prayers).map(([name, time]) => {
         const isActive = activePrayers.includes(name);
-        list.innerHTML += `
-            <div class="prayer-row ${isActive ? '' : 'inactive'}" onclick="toggleActive('${name}')" style="cursor:pointer; opacity: ${isActive ? '1' : '0.5'}">
-                <div class="p-name">
-                    <i class="fas ${isActive ? 'fa-volume-up' : 'fa-volume-mute'}" style="color: ${isActive ? '#10b981' : '#64748b'}"></i>
-                    &nbsp;&nbsp;<span>${name}</span>
-                </div>
-                <div class="p-time">${formatKu(time)}</div>
+        const [h, m] = time.split(':');
+        const h12 = h % 12 || 12;
+        const sfx = h >= 12 ? "د.ن" : "پ.ن";
+        return `
+            <div class="prayer-row ${isActive ? '' : 'inactive'}" onclick="toggleActive('${name}')">
+                <span><i class="fas fa-volume-${isActive?'up':'mute'}"></i> ${name}</span>
+                <div class="p-time"><span>${toKu(h12)}:${toKu(m)}</span> <span style="color:#94a3b8">${sfx}</span></div>
             </div>`;
-    });
+    }).join('');
+}
+
+function toggleActive(name) {
+    activePrayers = activePrayers.includes(name) ? activePrayers.filter(p => p !== name) : [...activePrayers, name];
+    render();
 }
 
 function updateClock() {
     const now = new Date();
-    let h = now.getHours();
-    let sfx = h >= 12 ? "د.ن" : "پ.ن";
-    let h12 = h % 12 || 12;
-    
-    // کاتژمێری سەرەکی بە شێوازی h:m:s لە چەپەوە
-    let timeStr = toKu(h12) + " : " + toKu(now.getMinutes().toString().padStart(2,'0')) + " : " + toKu(now.getSeconds().toString().padStart(2,'0'));
-    document.getElementById('liveClock').innerHTML = `
-        <span style="unicode-bidi: bidi-override; direction: ltr; display: inline-block;">${timeStr}</span> 
-        <span class="suffix">${sfx}</span>`;
-    
-    if(Object.keys(prayers).length > 0) {
-        let minDiff = Infinity, next = "";
-        Object.entries(prayers).forEach(([n, t]) => {
-            if(n === "خۆرهەڵاتن") return;
-            const [ph, pm] = t.split(':').map(Number);
-            const pDate = new Date(); pDate.setHours(ph, pm, 0);
-            let diff = pDate - now; if(diff < 0) diff += 86400000;
-            if(diff < minDiff) { minDiff = diff; next = n; }
-        });
-        
-        const s = Math.floor(minDiff / 1000);
-        let h_rem = Math.floor(s/3600);
-        let m_rem = Math.floor((s%3600)/60);
-        let s_rem = s%60;
-        
-        // کاتی ماوە بە شێوازی h:m:s لە چەپەوە
-        let countdownStr = toKu(h_rem) + " : " + toKu(m_rem.toString().padStart(2,'٠')) + " : " + toKu(s_rem.toString().padStart(2,'٠'));
-        
-        document.getElementById('countdown').innerHTML = `
-            ماوە بۆ بانگی ${next} : 
-            <span style="color: #22d3ee; font-size: 1.4rem; unicode-bidi: bidi-override; direction: ltr; display: inline-block;">
-                ${countdownStr}
-            </span>`;
-    }
+    const timeStr = `${toKu(now.getHours()%12||12)} : ${toKu(now.getMinutes().toString().padStart(2,'0'))} : ${toKu(now.getSeconds().toString().padStart(2,'0'))}`;
+    document.getElementById('liveClock').innerText = timeStr;
 }
 
-function updateCity() {
-    const city = document.getElementById('citySelect').value;
-    fetchTimes(city);
+// --- تەسبیح و زیکر و تیم ---
+let tCount = 0;
+function addTasbih() { tCount++; document.getElementById('modalTasbihDisplay').innerText = toKu(tCount); }
+function resetTasbih() { tCount = 0; document.getElementById('modalTasbihDisplay').innerText = toKu(0); }
+
+function setFullTheme(mode) {
+    const themes = {
+        cyan: {color:'#22d3ee', bg:'#020617', card:'#0f172a'},
+        green: {color:'#10b981', bg:'#062c1e', card:'#0a3d2e'},
+        gold: {color:'#f59e0b', bg:'#2d1a05', card:'#432808'}
+    };
+    const t = themes[mode];
+    document.documentElement.style.setProperty('--cyan', t.color);
+    document.documentElement.style.setProperty('--bg', t.bg);
+    document.documentElement.style.setProperty('--card', t.card);
+}
+
+// لۆژیکی زیکرەکان و بۆنەکان (بەکورتی لێرەدا دایبنێ)
+function showDhikrCategories() {
+    document.getElementById('dhikrTitle').innerText = "زیکرەکان";
+    document.getElementById('dhikrBody').innerHTML = `<div class="menu-item-link" onclick="showZList('بەیانیان')">زیکری بەیانیان</div><div class="menu-item-link" onclick="showZList('ئێواران')">زیکری ئێواران</div>`;
+}
+function showZList(name) {
+    document.getElementById('dhikrTitle').innerText = name;
+    document.getElementById('dhikrBackBtn').style.display = "block";
+    document.getElementById('dhikrBody').innerHTML = `<div style="padding:10px; background:#1e293b; border-radius:10px">اللهم بك أصبحنا...</div>`;
 }
 
 setInterval(updateClock, 1000);
 fetchTimes('Penjwin');
-
-// لۆژیکی تەسبیح
-let tCount = 0;
-function incrementTasbih() {
-    tCount++;
-    document.getElementById('tasbihCount').innerText = toKu(tCount);
-}
-function resetTasbih() {
-    tCount = 0;
-    document.getElementById('tasbihCount').innerText = toKu(tCount);
-}
-
-// لۆژیکی گۆڕینی ڕەنگ (تیم)
-function changeTheme(color) {
-    document.documentElement.style.setProperty('--cyan', color);
-    // پاشەکەوتکردنی ڕەنگەکە بۆ ئەوەی بە داخستنی پەیجەکە نەڕوات
-    localStorage.setItem('appTheme', color);
-}
-
-// لە کاتی بوکردنەوەی پەیجەکە، ڕەنگە پاشەکەوتکراوەکە بخوێنەرەوە
-window.onload = () => {
-    const savedTheme = localStorage.getItem('appTheme');
-    if (savedTheme) changeTheme(savedTheme);
-};
