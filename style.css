@@ -1,132 +1,63 @@
-:root { --bg: #020617; --card: #0f172a; --cyan: #22d3ee; --green: #10b981; --white: #ffffff; --green-dark: rgba(16, 185, 129, 0.2); }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-body { background: var(--bg); color: var(--white); direction: rtl; overflow: hidden; font-size: 1.1rem; }
+:root {
+    --bg: #020617;
+    --card: #0f172a;
+    --cyan: #22d3ee;
+    --green: #10b981;
+}
 
-/* Navbar */
-.navbar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 15px; background: rgba(15, 23, 42, 0.95); z-index: 1000; border-bottom: 1px solid var(--cyan); }
-.logo b { color: var(--cyan); font-size: 1.2rem; display: flex; align-items: center; }
+* { box-sizing: border-box; font-family: sans-serif; }
+body { background: var(--bg); color: white; margin: 0; transition: 0.3s; }
 
-/* Sidebar - X left, Title Center */
-.sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; z-index: 2000; transition: 0.3s; padding: 20px; border-left: 1px solid var(--cyan); }
+.navbar { background: var(--card); padding: 15px; display: flex; align-items: center; gap: 15px; }
+.menu-btn { font-size: 1.5rem; cursor: pointer; color: var(--cyan); }
+
+.container { display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 10px; }
+
+/* کاتژمێر و کاتەکان */
+.clock { font-size: 3rem; font-weight: bold; direction: ltr; unicode-bidi: bidi-override; }
+.date-section { text-align: center; color: #94a3b8; font-size: 0.9rem; }
+.countdown-box { color: var(--cyan); margin: 10px 0; font-size: 1.2rem; direction: ltr; }
+
+/* لیستی بانگەکان */
+.prayer-list { width: 92%; max-width: 450px; }
+.prayer-row { 
+    background: var(--card); margin-bottom: 8px; padding: 15px; 
+    border-radius: 12px; display: flex; justify-content: space-between;
+    border-right: 5px solid var(--cyan); transition: 0.2s;
+}
+.prayer-row.inactive { opacity: 0.4; border-right-color: #475569; }
+.p-time { display: flex; gap: 8px; direction: ltr; }
+
+/* مۆداڵەکان */
+.modal-overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+    display: none; justify-content: center; align-items: center; z-index: 2000; 
+}
+.tasbih-modal, .qibla-modal, .dhikr-modal, .event-modal {
+    background: var(--card); border: 2px solid var(--cyan);
+    border-radius: 30px; padding: 30px; position: relative;
+    display: flex; flex-direction: column; align-items: center;
+}
+.tasbih-modal { width: 280px; height: 480px; }
+#modalTasbihDisplay { font-size: 5rem; flex-grow: 1; display: flex; align-items: center; color: var(--cyan); }
+.count-btn { 
+    width: 100px; height: 100px; border-radius: 50%; border: none; 
+    background: var(--cyan); font-weight: bold; cursor: pointer; 
+}
+
+/* قیبلەنوما */
+.compass { 
+    width: 180px; height: 180px; border-radius: 50%; border: 5px solid #1e293b;
+    position: relative; background: radial-gradient(#1e293b, #020617);
+}
+.arrow { 
+    position: absolute; top: 10%; left: 50%; width: 4px; height: 40%; 
+    background: #ff4444; transform-origin: bottom; transform: translateX(-50%) rotate(192deg);
+}
+
+/* سایدبار */
+.sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: var(--card); z-index: 1000; transition: 0.3s; padding: 20px; }
 .sidebar.active { right: 0; }
-.sidebar-header {
-    display: flex !important;
-    flex-direction: row !important; /* ڕیزبەندی ئاسایی */
-    justify-content: space-between !important; /* پاڵ بە هەردوولا بۆ ئەوپەڕی چەپ و ڕاست */
-    align-items: center !important;
-    width: 100% !important;
-    padding: 15px 20px !important; /* کەمێک مەودا لە دیوارەکان */
-    border-bottom: 2px solid var(--cyan) !important;
-    margin-bottom: 20px !important;
-    direction: rtl !important; /* گرنگترین دێڕ: نوسین لای ڕاست و X لای چەپ */
-}
-
-.header-title {
-    color: var(--cyan) !important;
-    font-size: 1.3rem !important;
-    font-weight: bold !important;
-    margin: 0 !important;
-    text-align: right !important;
-}
-
-.close-btn {
-    color: #ff0000 !important;
-    font-size: 1.8rem !important;
-    cursor: pointer !important;
-}
-
-/* ستایلی تەسبیح */
-.tasbih-area { text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; }
-#tasbihCount { font-size: 2.5rem; color: var(--cyan); margin-bottom: 10px; }
-.tasbih-btn { width: 100%; padding: 10px; border: none; background: var(--cyan); color: #000; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 5px; }
-.reset-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
-
-/* ستایلی زانیارییەکان */
-.info-box { padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.9rem; line-height: 1.6; }
-
-/* ستایلی گۆڕینی ڕەنگ */
-.theme-picker { display: flex; gap: 15px; justify-content: center; padding: 10px; }
-.color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid white; transition: 0.2s; }
-.color-dot:hover { transform: scale(1.2); }
-
-/* YouTube Icon Color */
-.fa-youtube { color: #ff0000 !important; }
-.menu-link { text-decoration: none; color: white; display: block; padding: 15px 0; border-bottom: 1px solid #1e293b; }
-
-.menu-item summary { list-style: none; padding: 15px 0; border-bottom: 1px solid #1e293b; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-.adhan-options { background: rgba(255,255,255,0.05); border-radius: 8px; margin: 8px 0; padding: 10px; }
-.adhan-choice { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-/* Main Elements & Clock Anti-Shake */
-.container { padding-top: 65px; display: flex; flex-direction: column; align-items: center; height: 100vh; gap: 10px; }
-.clock { font-size: 2.6rem; font-weight: bold; margin-top: 10px; display: flex; justify-content: center; align-items: center; width: 100%; font-variant-numeric: tabular-nums; }
-.clock span { direction: ltr; display: inline-block; }
-.clock .suffix { font-size: 1.4rem; color: var(--cyan); margin-right: 15px; }
-
-.primary-date.centered { text-align: center; width: 100%; color: var(--green); font-weight: bold; font-size: 1.2rem; margin-top: 5px; }
-.secondary-dates { font-size: 0.95rem; display: flex; gap: 12px; align-items: center; }
-.v-line { width: 1.5px; height: 16px; background: var(--cyan); opacity: 0.6; display: inline-block; }
-
-/* Countdown */
-.timer-tag.big-timer { min-width: 330px; font-size: 1.2rem; color: #ffffff; font-weight: bold; padding: 12px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; border: 1px solid var(--cyan); margin: 5px 0; text-align: center; }
-.timer-tag span { font-variant-numeric: tabular-nums; }
-
-/* City Select - Custom Select Color */
-/* چاککردنی لاکێشەی شارەکان */
-.select-wrapper { 
-    position: relative; 
-    width: 92%; 
-    max-width: 450px; 
-    margin: 10px auto; /* بۆ ئەوەی بکەوێتە ناوەڕاست */
-}
-
-.green-dark-dropdown { 
-    width: 100% !important; 
-    padding: 12px !important; 
-    background: var(--green-dark) !important; 
-    border: 1px solid rgba(16, 185, 129, 0.5) !important; 
-    color: white !important; 
-    border-radius: 12px !important; 
-    font-size: 1.25rem !important; 
-    appearance: none !important; 
-    cursor: pointer !important;
-}
-
-.green-dark-dropdown option { 
-    background: #0f172a; 
-    color: white; 
-}
-
-/* ڕێکخستنی کاتەکانی ناو لیستەکە */
-.p-time {
-    display: flex !important;
-    flex-direction: row-reverse !important; /* پ.ن/د.ن لە چەپ */
-    gap: 8px;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-
-.select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--green); pointer-events: none; }
-/* ڕەنگی شارەکان کاتێک کلیکی لێ دەکەیت */
-.green-dark-dropdown option { background: #1e293b; color: white; }
-
-/* Prayer Cards */
-.prayer-grid { width: 92%; max-width: 450px; display: flex; flex-direction: column; gap: 6px; }
-.prayer-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 20px; border-radius: 12px; border-right: 6px solid var(--green); border-bottom: 2px solid rgba(16, 185, 129, 0.4); transition: 0.2s; }
-/* باری ناچالاک */
-.prayer-row.inactive {
-    /* گۆڕینی ڕەنگی هێڵە سەوزەکە بۆ خۆڵەمێشییەکی گونجاو */
-    border-right-color: #13623e !important; 
-    
-    /* کاڵکردنەوەی هەموو لاکێشەکە بۆ ئەوەی دیار بێت کە بێدەنگە */
-    opacity: 0.7 !important; 
-    
-    /* ئەگەر دەتەوێت کەمێک تاریکتر بێت لە باری ئاسایی */
-    background: rgba(15, 23, 42, 0.8) !important; 
-}
-
-.p-time { color: var(--cyan); font-weight: bold; font-size: 1.3rem; direction: ltr; font-variant-numeric: tabular-nums; }
-
-.sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
-.sidebar-overlay.active { display: block; }
+.menu-item-link { padding: 15px 0; border-bottom: 1px solid #1e293b; cursor: pointer; display: block; color: white; text-decoration: none; }
+.theme-grid { display: flex; gap: 10px; padding: 10px; }
+.dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
