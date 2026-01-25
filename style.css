@@ -46,7 +46,7 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
 
 /* Main Elements & Clock Anti-Shake */
 .container { padding-top: 65px; display: flex; flex-direction: column; align-items: center; height: 100vh; gap: 10px; }
-.clock { font-size: 2.6rem; font-weight: bold; margin-top: 25px; display: flex; justify-content: center; align-items: center; width: 100%; font-variant-numeric: tabular-nums; }
+.clock { font-size: 2.6rem; font-weight: bold; margin-top: 10px; display: flex; justify-content: center; align-items: center; width: 100%; font-variant-numeric: tabular-nums; }
 .clock span { direction: ltr; display: inline-block; }
 .clock .suffix { font-size: 1.4rem; color: var(--cyan); margin-right: 15px; }
 
@@ -67,7 +67,7 @@ body { background: var(--bg); color: var(--white); direction: rtl; overflow: hid
     margin: 10px auto; /* بۆ ئەوەی بکەوێتە ناوەڕاست */
 }
 
-.green-dark-dropdown { 
+.green-dark-drov pdown { 
     width: 100% !important; 
     padding: 12px !important; 
     background: var(--green-dark) !important; 
