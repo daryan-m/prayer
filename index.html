@@ -23,11 +23,11 @@
                 <summary><i class="fas fa-microphone-alt"></i> بانگبێژەکان</summary>
                 <div class="adhan-options">
                     <div class="adhan-choice">
-                        <label><input type="radio" name="adhan" checked> مەککەی پیرۆز</label>
+                        <label><input type="radio" name="adhan" checked> مەککە</label>
                         <i class="fas fa-play-circle play-btn" onclick="handleAdhan(this, 'https://www.islamcan.com/audio/adhan/azan1.mp3')"></i>
                     </div>
                     <div class="adhan-choice">
-                        <label><input type="radio" name="adhan"> مەدینەی منەوەرە</label>
+                        <label><input type="radio" name="adhan"> مەدینە</label>
                         <i class="fas fa-play-circle play-btn" onclick="handleAdhan(this, 'https://www.islamcan.com/audio/adhan/azan2.mp3')"></i>
                     </div>
                     <div class="adhan-choice">
@@ -38,8 +38,8 @@
             </details>
 
             <div class="menu-item-link" onclick="openModal('tasbihOverlay')"><i class="fas fa-fingerprint"></i> تەسبیحی دیجیتاڵ</div>
-            <div class="menu-item-link" onclick="openModal('dhikrOverlay')"><i class="fas fa-book-open"></i> زیکرەکان</div>
-            <div class="menu-item-link" onclick="openModal('qiblaOverlay')"><i class="fas fa-compass"></i> قیبلەنوما</div>
+            <div class="menu-item-link" onclick="openDhikr()"><i class="fas fa-book-open"></i> زیکرەکان</div>
+            <div class="menu-item-link" onclick="openQibla()"><i class="fas fa-compass"></i> قیبلەنوما</div>
             <div class="menu-item-link" onclick="openModal('eventOverlay')"><i class="fas fa-calendar-alt"></i> بۆنە ئایینییەکان</div>
             
             <details class="menu-item">
@@ -57,10 +57,14 @@
     </div>
 
     <div class="container">
-        <div class="clock" id="liveClock">٠٠ : ٠٠ : ٠٠</div>
+        <div class="clock-section">
+            <div class="clock" id="liveClock">٠٠:٠٠:٠٠</div>
+        </div>
+        
         <div class="date-section">
-            <div id="hijriDate">کۆچی : ...</div>
-            <div id="miladiDate">میلادی : ...</div>
+            <div id="hijriDate">کۆچی: ...</div>
+            <div id="kurdishDate">کوردی: ٢٧٢٥</div>
+            <div id="miladiDate">میلادی: ...</div>
         </div>
 
         <div class="countdown-box" id="countdown">ماوە بۆ بانگی داهاتوو...</div>
@@ -80,17 +84,17 @@
     </div>
 
     <div class="modal-overlay" id="tasbihOverlay">
-        <div class="tasbih-modal">
+        <div class="vertical-modal">
             <i class="fas fa-times close-btn" onclick="closeModal('tasbihOverlay')"></i>
             <h2 style="color:var(--cyan)">تەسبیح</h2>
             <div id="modalTasbihDisplay">٠</div>
             <button class="count-btn" onclick="addTasbih()">ژمارە بکە</button>
-            <button class="reset-btn" onclick="resetTasbih()">سفرکردنەوە</button>
+            <button class="reset-btn-modal" onclick="resetTasbih()">سفرکردنەوە</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="dhikrOverlay">
-        <div class="dhikr-modal">
+        <div class="vertical-modal dhikr-container">
             <div class="dhikr-header">
                 <i class="fas fa-arrow-right" id="dhikrBackBtn" onclick="showDhikrCategories()" style="display:none; cursor:pointer"></i>
                 <span id="dhikrTitle">زیکرەکان</span>
@@ -101,20 +105,19 @@
     </div>
 
     <div class="modal-overlay" id="qiblaOverlay">
-        <div class="qibla-modal">
+        <div class="vertical-modal">
             <i class="fas fa-times close-btn" onclick="closeModal('qiblaOverlay')"></i>
             <h3>قیبلەنوما</h3>
             <div class="compass"><div class="arrow"></div></div>
-            <p>ئاراستە: ١٩٢° باشووری ڕۆژئاوا</p>
+            <p style="margin-top:15px">ئاراستە: ١٩٢° باشووری ڕۆژئاوا</p>
         </div>
     </div>
 
     <div class="modal-overlay" id="eventOverlay">
-        <div class="event-modal">
+        <div class="vertical-modal">
             <i class="fas fa-times close-btn" onclick="closeModal('eventOverlay')"></i>
             <h3>بۆنە ئایینییەکان</h3>
             <div id="eventCalendar" class="event-list"></div>
-            <div class="nearest-box" id="nearestEvent"></div>
         </div>
     </div>
 
