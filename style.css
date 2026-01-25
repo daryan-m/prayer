@@ -2,62 +2,62 @@
     --bg: #020617;
     --card: #0f172a;
     --cyan: #22d3ee;
-    --green: #10b981;
 }
 
-* { box-sizing: border-box; font-family: sans-serif; }
-body { background: var(--bg); color: white; margin: 0; transition: 0.3s; }
+* { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background: var(--bg); color: white; margin: 0; direction: rtl; transition: 0.3s; }
 
-.navbar { background: var(--card); padding: 15px; display: flex; align-items: center; gap: 15px; }
+.navbar { background: var(--card); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
 .menu-btn { font-size: 1.5rem; cursor: pointer; color: var(--cyan); }
 
-.container { display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 10px; }
+.container { display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 15px; }
 
-/* کاتژمێر و کاتەکان */
-.clock { font-size: 3rem; font-weight: bold; direction: ltr; unicode-bidi: bidi-override; }
-.date-section { text-align: center; color: #94a3b8; font-size: 0.9rem; }
-.countdown-box { color: var(--cyan); margin: 10px 0; font-size: 1.2rem; direction: ltr; }
+.clock { font-size: 3.5rem; font-weight: bold; direction: ltr; display: flex; align-items: center; gap: 10px; }
+.ampm-label { font-size: 1.2rem; color: var(--cyan); }
 
-/* لیستی بانگەکان */
-.prayer-list { width: 92%; max-width: 450px; }
+.date-section { text-align: center; color: #94a3b8; line-height: 1.6; }
+
+.countdown-box { color: var(--cyan); font-size: 1.1rem; font-weight: bold; }
+
+.select-wrapper { position: relative; width: 90%; max-width: 350px; }
+.green-dark-dropdown {
+    width: 100%; padding: 12px; background: var(--card); border: 2px solid var(--cyan);
+    color: white; border-radius: 12px; appearance: none; text-align: center; cursor: pointer;
+}
+.select-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--cyan); }
+
+.prayer-list { width: 100%; max-width: 400px; }
 .prayer-row { 
-    background: var(--card); margin-bottom: 8px; padding: 15px; 
-    border-radius: 12px; display: flex; justify-content: space-between;
-    border-right: 5px solid var(--cyan); transition: 0.2s;
+    background: var(--card); margin-bottom: 10px; padding: 15px; border-radius: 15px;
+    display: flex; justify-content: space-between; border-right: 5px solid var(--cyan);
 }
-.prayer-row.inactive { opacity: 0.4; border-right-color: #475569; }
-.p-time { display: flex; gap: 8px; direction: ltr; }
+.p-time { direction: ltr; display: flex; gap: 5px; font-weight: bold; }
 
-/* مۆداڵەکان */
-.modal-overlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
-    display: none; justify-content: center; align-items: center; z-index: 2000; 
-}
-.tasbih-modal, .qibla-modal, .dhikr-modal, .event-modal {
-    background: var(--card); border: 2px solid var(--cyan);
-    border-radius: 30px; padding: 30px; position: relative;
-    display: flex; flex-direction: column; align-items: center;
-}
-.tasbih-modal { width: 280px; height: 480px; }
+/* Modals */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
+.vertical-modal { background: var(--card); width: 300px; height: 500px; border-radius: 35px; border: 2px solid var(--cyan); padding: 25px; display: flex; flex-direction: column; align-items: center; position: relative; }
+.close-btn { position: absolute; top: 20px; left: 20px; color: #ff4444; cursor: pointer; font-size: 1.3rem; }
+
 #modalTasbihDisplay { font-size: 5rem; flex-grow: 1; display: flex; align-items: center; color: var(--cyan); }
-.count-btn { 
-    width: 100px; height: 100px; border-radius: 50%; border: none; 
-    background: var(--cyan); font-weight: bold; cursor: pointer; 
-}
+.count-btn { width: 120px; height: 120px; border-radius: 50%; border: none; background: var(--cyan); font-weight: bold; font-size: 1.2rem; cursor: pointer; box-shadow: 0 8px 0 #15abbf; }
+.count-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #15abbf; }
+.reset-btn-modal { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 5px 15px; border-radius: 15px; margin-top: 15px; cursor: pointer; }
 
-/* قیبلەنوما */
-.compass { 
-    width: 180px; height: 180px; border-radius: 50%; border: 5px solid #1e293b;
-    position: relative; background: radial-gradient(#1e293b, #020617);
-}
-.arrow { 
-    position: absolute; top: 10%; left: 50%; width: 4px; height: 40%; 
-    background: #ff4444; transform-origin: bottom; transform: translateX(-50%) rotate(192deg);
-}
+/* Compass */
+.compass { width: 200px; height: 200px; border-radius: 50%; border: 6px solid #1e293b; position: relative; background: radial-gradient(#1e293b, #020617); margin-top: 50px; }
+.arrow { position: absolute; top: 10%; left: 50%; width: 5px; height: 40%; background: #ef4444; transform-origin: bottom; transform: translateX(-50%) rotate(192deg); }
 
-/* سایدبار */
+/* Dhikr & Events */
+.dhikr-container { height: 80vh; width: 90%; max-width: 400px; }
+.dhikr-header { width: 100%; display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+.dhikr-body { width: 100%; overflow-y: auto; padding-top: 15px; }
+.zikr-card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; text-align: center; line-height: 1.8; border: 1px solid #334155; }
+.event-list { width: 100%; overflow-y: auto; }
+.event-item { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; }
+
+/* Sidebar */
 .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: var(--card); z-index: 1000; transition: 0.3s; padding: 20px; }
 .sidebar.active { right: 0; }
+.sidebar-overlay.active { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
 .menu-item-link { padding: 15px 0; border-bottom: 1px solid #1e293b; cursor: pointer; display: block; color: white; text-decoration: none; }
-.theme-grid { display: flex; gap: 10px; padding: 10px; }
-.dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+.dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; border: 2px solid white; }
