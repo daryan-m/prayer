@@ -119,3 +119,27 @@ function updateCity() {
 
 setInterval(updateClock, 1000);
 fetchTimes('Penjwin');
+
+// لۆژیکی تەسبیح
+let tCount = 0;
+function incrementTasbih() {
+    tCount++;
+    document.getElementById('tasbihCount').innerText = toKu(tCount);
+}
+function resetTasbih() {
+    tCount = 0;
+    document.getElementById('tasbihCount').innerText = toKu(tCount);
+}
+
+// لۆژیکی گۆڕینی ڕەنگ (تیم)
+function changeTheme(color) {
+    document.documentElement.style.setProperty('--cyan', color);
+    // پاشەکەوتکردنی ڕەنگەکە بۆ ئەوەی بە داخستنی پەیجەکە نەڕوات
+    localStorage.setItem('appTheme', color);
+}
+
+// لە کاتی بوکردنەوەی پەیجەکە، ڕەنگە پاشەکەوتکراوەکە بخوێنەرەوە
+window.onload = () => {
+    const savedTheme = localStorage.getItem('appTheme');
+    if (savedTheme) changeTheme(savedTheme);
+};
